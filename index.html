@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revenue Wolves · Booking Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,400..500&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0A0F0C; --bg2:#0C1310; --panel:#101A14; --panel2:#14241C; --panelHi:#182C21;
+  --line:rgba(201,162,39,.16); --line2:rgba(255,255,255,.06);
+  --green:#1A472A; --green2:#2E6B43; --greenBright:#3E8E5A;
+  --gold:#C9A227; --goldSoft:#E3C765; --champ:#E8DEC0;
+  --ink:#ECEAE0; --ink2:#C9CFC6; --muted:#8E9B91; --muted2:#647168;
+  --terra:#B5654A; --amber:#C99440;
+  --rad:14px; --maxw:1320px;
+  --serif:'Fraunces',Georgia,serif; --sans:'Hanken Grotesk',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--sans);
+  -webkit-font-smoothing:antialiased; line-height:1.45;
+  font-feature-settings:"tnum" off;
+  min-height:100vh;
+  background-image:
+    radial-gradient(1200px 600px at 12% -8%, rgba(46,107,67,.20), transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, rgba(201,162,39,.08), transparent 55%);
+  background-attachment:fixed;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  mix-blend-mode:overlay;
+}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.wrap{position:relative; z-index:1; max-width:var(--maxw); margin:0 auto; padding:0 32px}
+
+/* ---------- HEADER ---------- */
+header.top{padding:46px 0 26px}
+.brandline{display:flex; align-items:center; gap:13px; margin-bottom:30px}
+.crest{
+  width:34px; height:34px; flex:none; border-radius:8px;
+  background:linear-gradient(145deg,var(--green2),var(--green));
+  border:1px solid rgba(201,162,39,.45);
+  display:grid; place-items:center; box-shadow:0 6px 22px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.08);
+}
+.crest svg{width:19px;height:19px}
+.brandtxt{display:flex; flex-direction:column; line-height:1.05}
+.brandtxt b{font-family:var(--sans); font-weight:700; letter-spacing:.16em; font-size:12.5px; color:var(--champ); text-transform:uppercase}
+.brandtxt span{font-size:10.5px; letter-spacing:.28em; text-transform:uppercase; color:var(--muted2); margin-top:3px}
+.spacer{flex:1}
+.asof{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); text-align:right}
+.asof b{color:var(--goldSoft); font-weight:600}
+
+.headline{max-width:840px}
+.eyebrow{font-size:11.5px; letter-spacing:.34em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:16px}
+h1{font-family:var(--serif); font-weight:340; font-size:clamp(34px,4.6vw,58px); line-height:1.02; letter-spacing:-.01em; color:#fff}
+h1 em{font-style:italic; color:var(--goldSoft); font-weight:380}
+.dek{margin-top:18px; color:var(--ink2); font-size:15.5px; max-width:680px; line-height:1.6}
+.dek b{color:var(--champ); font-weight:600}
+
+/* KPI strip */
+.kpis{display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin-top:38px;
+  border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+.kpi{padding:22px 24px 20px; border-right:1px solid var(--line2); position:relative}
+.kpi:last-child{border-right:0}
+.kpi .k{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted); margin-bottom:11px}
+.kpi .v{font-family:var(--serif); font-size:33px; font-weight:380; color:#fff; line-height:1}
+.kpi .v small{font-size:18px; color:var(--gold); font-family:var(--serif)}
+.kpi .s{font-size:12px; color:var(--muted2); margin-top:7px}
+
+/* ---------- TOOLBAR ---------- */
+.toolbar{display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin:34px 0 22px}
+.search{flex:1; min-width:240px; position:relative}
+.search svg{position:absolute; left:15px; top:50%; transform:translateY(-50%); width:16px; height:16px; stroke:var(--muted2)}
+.search input{
+  width:100%; background:var(--panel); border:1px solid var(--line2); color:var(--ink);
+  padding:13px 16px 13px 42px; border-radius:11px; font-family:var(--sans); font-size:14px; letter-spacing:.01em;
+  transition:border-color .2s, box-shadow .2s;
+}
+.search input::placeholder{color:var(--muted2)}
+.search input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,.12)}
+.seg{display:flex; gap:2px; background:var(--panel); border:1px solid var(--line2); border-radius:11px; padding:4px}
+.seg button{
+  background:transparent; border:0; color:var(--muted); font-family:var(--sans); font-size:12.5px; font-weight:600;
+  padding:8px 13px; border-radius:8px; cursor:pointer; letter-spacing:.02em; transition:.18s; white-space:nowrap}
+.seg button:hover{color:var(--ink2)}
+.seg button.on{background:var(--green); color:var(--champ); box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.tlabel{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted2); margin-right:2px}
+
+.legend{display:flex; align-items:center; gap:18px; margin:0 0 18px; flex-wrap:wrap}
+.legend .lg{display:flex; align-items:center; gap:7px; font-size:11px; letter-spacing:.06em; color:var(--muted)}
+.legend .dot{width:9px; height:9px; border-radius:2px}
+.heatbar{height:8px; width:160px; border-radius:4px; background:linear-gradient(90deg,#B5654A,#C99440,#C9A227,#7BA05B,#3E8E5A)}
+.legend .scale{display:flex; align-items:center; gap:9px; font-size:10.5px; letter-spacing:.08em; color:var(--muted2)}
+
+/* ---------- CARD GRID ---------- */
+.grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding-bottom:60px}
+.card{
+  background:linear-gradient(180deg,var(--panel),var(--bg2));
+  border:1px solid var(--line2); border-radius:var(--rad); padding:20px 20px 18px;
+  cursor:pointer; position:relative; overflow:hidden; transition:transform .22s cubic-bezier(.2,.7,.3,1), border-color .22s, box-shadow .22s;
+  opacity:0; transform:translateY(14px); animation:rise .5s forwards;
+}
+@keyframes rise{to{opacity:1; transform:none}}
+.card::after{content:""; position:absolute; left:0; top:0; height:100%; width:3px;
+  background:linear-gradient(180deg,var(--gold),var(--green2)); opacity:0; transition:opacity .22s}
+.card:hover{transform:translateY(-4px); border-color:var(--line); box-shadow:0 18px 40px -18px rgba(0,0,0,.7)}
+.card:hover::after{opacity:1}
+.c-top{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:3px}
+.c-name{font-family:var(--sans); font-weight:700; font-size:15.5px; letter-spacing:.01em; color:#fff}
+.c-nick{font-family:var(--serif); font-style:italic; font-weight:380; font-size:13.5px; color:var(--gold); margin-top:2px}
+.brbadge{flex:none; font-size:10px; letter-spacing:.08em; font-weight:700; color:var(--champ);
+  background:rgba(46,107,67,.32); border:1px solid var(--line); padding:4px 8px; border-radius:20px; white-space:nowrap}
+
+/* range bar */
+.rangewrap{margin:18px 0 14px}
+.rb-vals{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px}
+.rb-end{text-align:left}
+.rb-end.hi{text-align:right}
+.rb-end .lab{font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted2)}
+.rb-end .val{font-family:var(--serif); font-size:18px; color:var(--ink); margin-top:1px}
+.rb-end.hi .val{color:var(--goldSoft)}
+.track{position:relative; height:7px; border-radius:4px; background:rgba(255,255,255,.05); overflow:visible}
+.track .fill{position:absolute; top:0; bottom:0; border-radius:4px;
+  background:linear-gradient(90deg,rgba(181,101,74,.85),var(--amber),var(--gold),#7BA05B,var(--greenBright))}
+.track .med{position:absolute; top:50%; width:12px; height:12px; border-radius:50%; transform:translate(-50%,-50%);
+  background:#fff; border:2px solid var(--green); box-shadow:0 2px 6px rgba(0,0,0,.5); z-index:3}
+.track .tick{position:absolute; top:-5px; width:2px; height:17px; background:var(--muted); transform:translateX(-50%); z-index:2; border-radius:2px}
+.track .tick.base{background:rgba(201,162,39,.5)}
+.rb-caption{display:flex; justify-content:space-between; margin-top:9px}
+.rb-caption span{font-size:10px; letter-spacing:.04em; color:var(--muted2)}
+.rb-caption b{font-family:var(--serif); font-weight:400; font-size:12px; margin-left:4px}
+.rb-caption .floor b{color:var(--ink2)}
+.rb-caption .med b{color:#fff}
+.rb-caption .base b{color:var(--goldSoft)}
+
+/* stat trio */
+.trio{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line2);
+  border:1px solid var(--line2); border-radius:10px; overflow:hidden; margin-top:4px}
+.st{background:var(--bg2); padding:11px 11px 10px; text-align:center}
+.st .lab{font-size:9px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted2)}
+.st .big{font-family:var(--serif); font-size:19px; color:var(--ink); margin-top:4px; line-height:1}
+.st .sub{font-size:10.5px; color:var(--muted); margin-top:5px}
+.st.peak .big{color:var(--greenBright)}
+.st.trough .big{color:var(--terra)}
+.st.long .big{color:var(--goldSoft)}
+
+.c-foot{display:flex; justify-content:space-between; align-items:center; margin-top:15px; padding-top:13px; border-top:1px solid var(--line2)}
+.c-foot .meta{font-size:11px; color:var(--muted); letter-spacing:.02em}
+.c-foot .meta b{color:var(--ink2); font-weight:600}
+.c-foot .open{font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); display:flex; align-items:center; gap:5px; font-weight:600}
+.c-foot .open svg{width:13px;height:13px;stroke:var(--gold)}
+
+.empty{grid-column:1/-1; text-align:center; padding:70px 0; color:var(--muted)}
+
+/* ---------- DRAWER ---------- */
+.scrim{position:fixed; inset:0; background:rgba(5,8,6,.66); backdrop-filter:blur(3px); opacity:0; pointer-events:none; transition:opacity .3s; z-index:40}
+.scrim.show{opacity:1; pointer-events:auto}
+.drawer{position:fixed; top:0; right:0; height:100%; width:min(720px,94vw); background:var(--bg);
+  border-left:1px solid var(--line); transform:translateX(102%); transition:transform .4s cubic-bezier(.22,.7,.25,1); z-index:50;
+  display:flex; flex-direction:column; box-shadow:-30px 0 80px -30px rgba(0,0,0,.85)}
+.drawer.show{transform:none}
+.d-head{padding:26px 30px 20px; border-bottom:1px solid var(--line); position:relative;
+  background:linear-gradient(180deg,var(--panel2),var(--bg))}
+.d-close{position:absolute; top:22px; right:24px; width:34px; height:34px; border-radius:9px; background:var(--panel);
+  border:1px solid var(--line2); color:var(--muted); cursor:pointer; display:grid; place-items:center; transition:.18s}
+.d-close:hover{color:var(--ink); border-color:var(--gold)}
+.d-close svg{width:16px;height:16px;stroke:currentColor}
+.d-eyebrow{font-size:10.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--gold); font-weight:600}
+.d-title{font-family:var(--sans); font-weight:700; font-size:23px; color:#fff; margin-top:7px; padding-right:40px}
+.d-sub{font-family:var(--serif); font-style:italic; font-size:16px; color:var(--gold); margin-top:2px}
+.d-floors{display:flex; gap:22px; margin-top:16px; flex-wrap:wrap}
+.d-floors .f{font-size:11px; color:var(--muted); letter-spacing:.04em}
+.d-floors .f b{font-family:var(--serif); font-size:15px; color:var(--ink2); font-weight:400; margin-left:6px}
+
+.d-body{flex:1; overflow-y:auto; padding:24px 30px 50px}
+.d-body::-webkit-scrollbar{width:9px}
+.d-body::-webkit-scrollbar-thumb{background:var(--panel2); border-radius:8px; border:2px solid var(--bg)}
+
+/* evaluator */
+.evalbox{background:linear-gradient(180deg,var(--panel),var(--bg2)); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:24px}
+.evalbox .eh{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:13px; display:flex; align-items:center; gap:8px}
+.evalbox .eh svg{width:14px;height:14px;stroke:var(--gold)}
+.evalrow{display:flex; gap:12px; align-items:stretch; flex-wrap:wrap}
+.evalrow .inp{position:relative; flex:1; min-width:150px}
+.evalrow .inp .cur{position:absolute; left:13px; top:50%; transform:translateY(-50%); color:var(--muted); font-family:var(--serif); font-size:16px}
+.evalrow input{width:100%; background:var(--bg); border:1px solid var(--line2); border-radius:9px; color:#fff;
+  padding:12px 14px 12px 26px; font-family:var(--serif); font-size:18px; transition:.18s}
+.evalrow input:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,.1)}
+.verdict{flex:1.4; min-width:200px; display:flex; align-items:center; gap:14px; border-radius:9px; padding:10px 16px;
+  border:1px solid var(--line2); background:var(--bg); transition:.2s}
+.verdict .pill{font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; padding:5px 11px; border-radius:20px; white-space:nowrap}
+.verdict .vtxt{font-size:12.5px; color:var(--ink2); line-height:1.4}
+.verdict .vtxt b{color:#fff}
+.verdict.idle{color:var(--muted2); font-size:12.5px; align-items:center}
+
+/* distribution strip */
+.dist{margin:6px 0 26px}
+.dist .dh{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:11px}
+.dist .dh .t{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted)}
+.dist .dh .r{font-size:11px; color:var(--muted2)}
+.strip{position:relative; height:54px; border:1px solid var(--line2); border-radius:10px; background:
+  linear-gradient(90deg, rgba(181,101,74,.10), rgba(201,162,39,.07), rgba(62,142,90,.10));
+  overflow:hidden}
+.strip .grid-q{position:absolute; top:0; bottom:0; width:1px; background:rgba(255,255,255,.05)}
+.strip .pt{position:absolute; bottom:8px; width:7px; height:7px; border-radius:50%; transform:translateX(-50%); transition:.2s}
+.strip .med-line{position:absolute; top:0; bottom:0; width:2px; background:rgba(255,255,255,.6); transform:translateX(-50%)}
+.strip .med-line::after{content:"median"; position:absolute; top:3px; left:5px; font-size:8.5px; letter-spacing:.1em; color:var(--muted); text-transform:uppercase}
+.strip .ev-line{position:absolute; top:0; bottom:0; width:2px; background:var(--gold); transform:translateX(-50%); box-shadow:0 0 10px var(--gold); opacity:0; transition:.2s}
+.strip .ev-line.show{opacity:1}
+
+/* table */
+.tabhead{display:flex; align-items:baseline; justify-content:space-between; margin:6px 0 12px}
+.tabhead .tt{font-size:10.5px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted)}
+.tabhead .tc{font-size:11px; color:var(--muted2)}
+table{width:100%; border-collapse:collapse; font-size:12.5px}
+thead th{text-align:right; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted2);
+  font-weight:600; padding:8px 8px; border-bottom:1px solid var(--line); cursor:pointer; user-select:none; white-space:nowrap; transition:color .15s}
+thead th:first-child{text-align:left}
+thead th:hover{color:var(--gold)}
+thead th .ar{opacity:.45; font-size:9px}
+tbody td{padding:9px 8px; border-bottom:1px solid var(--line2); text-align:right; white-space:nowrap}
+tbody td:first-child{text-align:left}
+tbody tr{transition:background .14s}
+tbody tr:hover{background:rgba(201,162,39,.05)}
+.dt{color:var(--ink2)}
+.dt small{color:var(--muted2); display:block; font-size:10px; margin-top:1px}
+.adrcell{display:inline-flex; align-items:center; gap:9px; justify-content:flex-end}
+.adrbar{width:46px; height:5px; border-radius:3px; background:rgba(255,255,255,.07); position:relative; overflow:hidden; flex:none}
+.adrbar i{position:absolute; left:0; top:0; bottom:0; border-radius:3px}
+.adrnum{font-family:var(--serif); font-size:14px; color:#fff; min-width:52px; text-align:right}
+.revnum{font-family:var(--serif); font-size:13px; color:var(--ink2)}
+.qpill{font-size:9.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px; border-radius:16px; display:inline-block}
+.src{font-size:11px; color:var(--ink2); letter-spacing:.02em}
+.muted{color:var(--muted)}
+
+.postwrap{margin-top:26px}
+.posthd{display:flex; align-items:center; gap:10px; cursor:pointer; padding:13px 16px; border:1px solid var(--line2);
+  border-radius:10px; background:var(--panel); transition:.18s}
+.posthd:hover{border-color:var(--line)}
+.posthd .pt{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--champ); font-weight:600; flex:1}
+.posthd .cnt{font-size:11px; color:var(--muted)}
+.posthd .chev{transition:transform .25s; stroke:var(--muted)}
+.posthd.open .chev{transform:rotate(180deg)}
+.postnote{font-size:11px; color:var(--muted2); margin:9px 4px 4px; line-height:1.5; font-style:italic}
+.postbody{display:none}
+.postbody.open{display:block}
+
+footer.foot{border-top:1px solid var(--line); padding:30px 0 50px; margin-top:10px}
+.foot .row{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px}
+.foot .meth{font-size:11.5px; color:var(--muted); max-width:640px; line-height:1.6}
+.foot .meth b{color:var(--ink2)}
+.foot .mark{font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted2)}
+.foot .mark b{color:var(--gold)}
+
+@media(max-width:1080px){ .grid{grid-template-columns:repeat(2,1fr)} .kpis{grid-template-columns:repeat(3,1fr)} .kpi:nth-child(3){border-right:0} }
+@media(max-width:680px){ .wrap{padding:0 18px} .grid{grid-template-columns:1fr} .kpis{grid-template-columns:repeat(2,1fr)} .d-body,.d-head{padding-left:18px;padding-right:18px} thead th:nth-child(2),tbody td:nth-child(2){display:none} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brandline">
+      <div class="crest"><svg viewBox="0 0 24 24" fill="none" stroke="#E8DEC0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-9 5 6 5-9 4 12"/><path d="M3 21h18"/></svg></div>
+      <div class="brandtxt"><b>Revenue Wolves</b><span>Revenue Management</span></div>
+      <div class="spacer"></div>
+      <div class="asof">Reporting as of<br><b id="asof"></b></div>
+    </div>
+    <div class="headline">
+      <div class="eyebrow">London Portfolio · Booking Intelligence</div>
+      <h1>Know a strong booking <em>the moment it lands.</em></h1>
+      <p class="dek">Every listing's full reservation history, distilled into a single performance envelope — <b>highest and lowest ADR ever achieved</b>, the booking windows behind them, longest stays, and the realised rate range. Open any property to audit the ledger or stress-test a new reservation against its own track record.</p>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </header>
+
+  <div class="toolbar">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input id="search" type="text" placeholder="Search a property — name or address…" autocomplete="off">
+    </div>
+    <div class="seg" id="sortseg">
+      <span class="tlabel" style="padding:8px 6px 8px 8px">Sort</span>
+      <button data-sort="name" class="on">Address</button>
+      <button data-sort="peak">Peak ADR</button>
+      <button data-sort="range">Range</button>
+      <button data-sort="vol">Bookings</button>
+      <button data-sort="rev">Revenue</button>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span class="lg" style="letter-spacing:.16em;text-transform:uppercase;font-size:10px;color:var(--muted2)">ADR position vs this listing's range</span>
+    <div class="scale"><span>Soft</span><div class="heatbar"></div><span>Premium</span></div>
+    <span class="lg"><span class="dot" style="background:#fff;border:1px solid var(--green)"></span>Median achieved</span>
+    <span class="lg"><span class="dot" style="background:var(--muted)"></span>PriceLabs floor / base</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer class="foot">
+    <div class="row">
+      <div class="meth"><b>Method.</b> Baseline reservations were booked between <b id="mstart"></b> and <b id="mcut"></b> — the window <em>before</em> dynamic pricing went live on <b id="mgolive"></b>. Reservations created after go-live are kept separate inside each property and excluded from the envelope so historical benchmarks stay clean. ADR, rental revenue, length of stay and booking window are taken directly from the Guesty export; floor / base / max prices from the PriceLabs MultiCalendar.</div>
+      <div class="mark">Prepared by <b>Revenue Wolves</b></div>
+    </div>
+  </footer>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true"></aside>
+
+<script id="DATA" type="application/json">{"generatedAt":"2026-05-26","baselineStart":"2026-02-01","baselineCut":"2026-05-21","goLive":"2026-05-21","currency":"\u00a3","listings":[{"id":"6998c23a91f670001306feb5","short":"2 Aldford House","nick":"Mayfair Confidential","full":"2 Aldford House -- Mayfair Confidential","br":2,"minP":475,"baseP":725,"maxP":1300,"res":[{"booked":"2026-05-19","checkin":"2026-05-26","checkout":"2026-06-18","adr":631.06,"rev":14514.3,"src":"Airbnb","los":23,"win":7},{"booked":"2026-04-14","checkin":"2026-05-08","checkout":"2026-05-22","adr":510.88,"rev":7152.3,"src":"Airbnb","los":14,"win":24},{"booked":"2026-04-13","checkin":"2026-05-22","checkout":"2026-05-26","adr":723.25,"rev":2893.0,"src":"Airbnb","los":4,"win":39},{"booked":"2026-04-10","checkin":"2026-04-20","checkout":"2026-04-29","adr":465.0,"rev":4185.0,"src":"Airbnb","los":9,"win":10},{"booked":"2026-04-06","checkin":"2026-04-15","checkout":"2026-04-20","adr":428.32,"rev":2141.6,"src":"Airbnb","los":5,"win":9},{"booked":"2026-04-02","checkin":"2026-04-07","checkout":"2026-04-13","adr":384.0,"rev":2304.0,"src":"Airbnb","los":6,"win":5},{"booked":"2026-03-25","checkin":"2026-03-30","checkout":"2026-04-07","adr":492.48,"rev":3939.84,"src":"Direct","los":8,"win":5},{"booked":"2026-03-24","checkin":"2026-03-24","checkout":"2026-03-29","adr":547.2,"rev":2736.0,"src":"Airbnb","los":5,"win":0}],"post":[{"booked":"2026-05-25","checkin":"2026-07-11","checkout":"2026-07-26","adr":1066.01,"rev":15990.21,"src":"Vrbo","los":15,"win":47}]},{"id":"67dc70ad0e799f0011d5de19","short":"5A Balfour Place","nick":"The Mayfair Maisonette","full":"5A Balfour Place -- The Mayfair Maisonette","br":1,"minP":200,"baseP":370,"maxP":650,"res":[{"booked":"2026-05-18","checkin":"2026-06-24","checkout":"2026-06-28","adr":401.55,"rev":1606.19,"src":"Trip.com","los":4,"win":37},{"booked":"2026-05-14","checkin":"2026-06-02","checkout":"2026-06-08","adr":445.05,"rev":2670.3,"src":"Airbnb","los":6,"win":19},{"booked":"2026-05-10","checkin":"2026-05-28","checkout":"2026-06-02","adr":383.2,"rev":1916.0,"src":"Airbnb","los":5,"win":18},{"booked":"2026-05-07","checkin":"2026-05-23","checkout":"2026-05-28","adr":212.38,"rev":1061.91,"src":"Booking.com","los":5,"win":16},{"booked":"2026-05-04","checkin":"2026-05-06","checkout":"2026-05-08","adr":352.5,"rev":705.0,"src":"Airbnb","los":2,"win":2},{"booked":"2026-05-03","checkin":"2026-05-04","checkout":"2026-05-06","adr":216.0,"rev":432.0,"src":"Airbnb","los":2,"win":1},{"booked":"2026-05-01","checkin":"2026-05-19","checkout":"2026-05-23","adr":387.75,"rev":1551.0,"src":"Airbnb","los":4,"win":18},{"booked":"2026-04-25","checkin":"2026-06-10","checkout":"2026-06-16","adr":691.83,"rev":4151.0,"src":"Marriott H&V","los":6,"win":46},{"booked":"2026-04-19","checkin":"2026-04-22","checkout":"2026-04-25","adr":258.0,"rev":774.0,"src":"Airbnb","los":3,"win":3},{"booked":"2026-03-29","checkin":"2026-05-09","checkout":"2026-05-16","adr":328.86,"rev":2302.02,"src":"Airbnb","los":7,"win":41},{"booked":"2026-03-25","checkin":"2026-04-14","checkout":"2026-04-22","adr":255.15,"rev":2041.2,"src":"Airbnb","los":8,"win":20},{"booked":"2026-03-25","checkin":"2026-04-25","checkout":"2026-05-03","adr":358.38,"rev":2867.0,"src":"Airbnb","los":8,"win":31},{"booked":"2026-03-23","checkin":"2026-03-26","checkout":"2026-04-01","adr":195.0,"rev":1170.0,"src":"Booking.com","los":6,"win":3},{"booked":"2026-03-03","checkin":"2026-03-19","checkout":"2026-03-22","adr":253.33,"rev":760.0,"src":"Airbnb","los":3,"win":16},{"booked":"2026-02-28","checkin":"2026-03-13","checkout":"2026-03-16","adr":151.81,"rev":455.42,"src":"Booking.com","los":3,"win":13},{"booked":"2026-02-26","checkin":"2026-03-16","checkout":"2026-03-19","adr":150.05,"rev":450.15,"src":"Booking.com","los":3,"win":18},{"booked":"2026-02-23","checkin":"2026-04-07","checkout":"2026-04-14","adr":236.42,"rev":1654.97,"src":"Booking.com","los":7,"win":43},{"booked":"2026-02-18","checkin":"2026-02-20","checkout":"2026-02-27","adr":135.05,"rev":945.35,"src":"Booking.com","los":7,"win":2}],"post":[{"booked":"2026-05-23","checkin":"2026-07-11","checkout":"2026-07-19","adr":437.27,"rev":3498.16,"src":"Booking.com","los":8,"win":49}]},{"id":"67dc70e7f5e903001a135050","short":"5D Balfour Place","nick":"Mayfair Studio Royale","full":"5D Balfour Place -- Mayfair Studio Royale","br":0,"minP":200,"baseP":315,"maxP":540,"res":[{"booked":"2026-05-20","checkin":"2026-06-01","checkout":"2026-06-05","adr":178.08,"rev":712.32,"src":"Expedia","los":4,"win":12},{"booked":"2026-05-16","checkin":"2026-06-13","checkout":"2026-06-20","adr":401.58,"rev":2811.05,"src":"Booking.com","los":7,"win":28},{"booked":"2026-05-13","checkin":"2026-05-23","checkout":"2026-05-25","adr":299.85,"rev":599.7,"src":"Agoda","los":2,"win":10},{"booked":"2026-05-05","checkin":"2026-07-29","checkout":"2026-08-05","adr":386.24,"rev":2703.66,"src":"Booking.com","los":7,"win":85},{"booked":"2026-05-04","checkin":"2026-06-05","checkout":"2026-06-10","adr":329.04,"rev":1645.2,"src":"Vrbo","los":5,"win":32},{"booked":"2026-05-01","checkin":"2026-06-26","checkout":"2026-07-01","adr":364.03,"rev":1820.13,"src":"Trip.com","los":5,"win":56},{"booked":"2026-04-20","checkin":"2026-05-01","checkout":"2026-05-05","adr":258.5,"rev":1034.0,"src":"Airbnb","los":4,"win":11},{"booked":"2026-04-18","checkin":"2026-04-27","checkout":"2026-04-30","adr":216.0,"rev":648.0,"src":"Airbnb","los":3,"win":9},{"booked":"2026-04-16","checkin":"2026-05-07","checkout":"2026-05-11","adr":260.1,"rev":1040.4,"src":"Airbnb","los":4,"win":21},{"booked":"2026-04-01","checkin":"2026-05-25","checkout":"2026-05-31","adr":330.75,"rev":1984.5,"src":"Airbnb","los":6,"win":54},{"booked":"2026-03-27","checkin":"2026-03-30","checkout":"2026-04-03","adr":201.25,"rev":805.0,"src":"Airbnb","los":4,"win":3},{"booked":"2026-03-23","checkin":"2026-04-23","checkout":"2026-04-27","adr":296.1,"rev":1184.4,"src":"Airbnb","los":4,"win":31},{"booked":"2026-03-20","checkin":"2026-05-13","checkout":"2026-05-16","adr":333.67,"rev":1001.0,"src":"Airbnb","los":3,"win":54},{"booked":"2026-03-19","checkin":"2026-03-20","checkout":"2026-03-22","adr":197.5,"rev":395.0,"src":"Airbnb","los":2,"win":1},{"booked":"2026-03-18","checkin":"2026-05-16","checkout":"2026-05-23","adr":302.79,"rev":2119.5,"src":"Airbnb","los":7,"win":59},{"booked":"2026-02-24","checkin":"2026-02-27","checkout":"2026-03-03","adr":175.5,"rev":702.0,"src":"Airbnb","los":4,"win":3},{"booked":"2026-02-24","checkin":"2026-03-06","checkout":"2026-03-08","adr":146.25,"rev":292.5,"src":"Booking.com","los":2,"win":10},{"booked":"2026-02-21","checkin":"2026-04-03","checkout":"2026-04-10","adr":182.8,"rev":1279.62,"src":"Booking.com","los":7,"win":41},{"booked":"2026-02-19","checkin":"2026-03-24","checkout":"2026-03-30","adr":185.58,"rev":1113.45,"src":"Booking.com","los":6,"win":33},{"booked":"2026-02-13","checkin":"2026-03-08","checkout":"2026-03-15","adr":193.35,"rev":1353.47,"src":"Airbnb","los":7,"win":23},{"booked":"2026-02-13","checkin":"2026-02-19","checkout":"2026-02-25","adr":195.0,"rev":1170.0,"src":"Airbnb","los":6,"win":6},{"booked":"2026-02-02","checkin":"2026-02-13","checkout":"2026-02-16","adr":149.76,"rev":449.28,"src":"Booking.com","los":3,"win":11},{"booked":"2026-02-01","checkin":"2026-02-01","checkout":"2026-02-04","adr":195.0,"rev":585.0,"src":"Airbnb","los":3,"win":0}],"post":[{"booked":"2026-05-25","checkin":"2026-07-16","checkout":"2026-07-24","adr":359.35,"rev":2874.79,"src":"Booking.com","los":8,"win":52},{"booked":"2026-05-25","checkin":"2026-08-05","checkout":"2026-08-11","adr":293.47,"rev":1760.8,"src":"Agoda","los":6,"win":72}]},{"id":"679b0ea4cb8d6900130ed2c5","short":"10 Roland Gardens","nick":"Its South Ken, Darling!","full":"10 Roland Gardens -- Its South Ken, Darling!","br":2,"minP":300,"baseP":538,"maxP":1300,"res":[{"booked":"2026-05-20","checkin":"2026-05-20","checkout":"2026-05-26","adr":415.5,"rev":2493.0,"src":"Airbnb","los":6,"win":0},{"booked":"2026-05-13","checkin":"2026-08-17","checkout":"2026-08-23","adr":579.63,"rev":3477.76,"src":"Vrbo","los":6,"win":96},{"booked":"2026-05-04","checkin":"2026-05-04","checkout":"2026-05-09","adr":202.5,"rev":1012.5,"src":"Booking.com","los":5,"win":0},{"booked":"2026-05-03","checkin":"2026-09-12","checkout":"2026-09-19","adr":800.16,"rev":5601.13,"src":"Plum Guide","los":7,"win":132},{"booked":"2026-04-30","checkin":"2026-08-26","checkout":"2026-09-02","adr":697.84,"rev":4884.89,"src":"Plum Guide","los":7,"win":118},{"booked":"2026-04-29","checkin":"2026-06-20","checkout":"2026-06-27","adr":1056.71,"rev":7397.0,"src":"Marriott H&V","los":7,"win":52},{"booked":"2026-04-27","checkin":"2026-05-16","checkout":"2026-05-20","adr":475.75,"rev":1903.0,"src":"Airbnb","los":4,"win":19},{"booked":"2026-04-21","checkin":"2026-08-07","checkout":"2026-08-12","adr":677.4,"rev":3387.0,"src":"Airbnb","los":5,"win":108},{"booked":"2026-04-17","checkin":"2026-04-19","checkout":"2026-04-24","adr":339.3,"rev":1696.5,"src":"Airbnb","los":5,"win":2},{"booked":"2026-04-16","checkin":"2026-06-28","checkout":"2026-07-07","adr":1003.86,"rev":9034.77,"src":"Vrbo","los":9,"win":73},{"booked":"2026-04-13","checkin":"2026-04-24","checkout":"2026-04-28","adr":275.32,"rev":1101.27,"src":"Booking.com","los":4,"win":11},{"booked":"2026-04-11","checkin":"2026-04-29","checkout":"2026-05-03","adr":436.05,"rev":1744.2,"src":"Airbnb","los":4,"win":18},{"booked":"2026-04-08","checkin":"2026-04-11","checkout":"2026-04-16","adr":444.6,"rev":2223.0,"src":"Airbnb","los":5,"win":3},{"booked":"2026-04-07","checkin":"2026-07-25","checkout":"2026-08-06","adr":604.92,"rev":7259.0,"src":"Marriott H&V","los":12,"win":109},{"booked":"2026-03-24","checkin":"2026-06-08","checkout":"2026-06-20","adr":705.58,"rev":8467.0,"src":"Marriott H&V","los":12,"win":76},{"booked":"2026-03-23","checkin":"2026-05-27","checkout":"2026-06-06","adr":688.79,"rev":6887.86,"src":"Vrbo","los":10,"win":65},{"booked":"2026-03-22","checkin":"2026-04-16","checkout":"2026-04-19","adr":429.97,"rev":1289.92,"src":"Booking.com","los":3,"win":25},{"booked":"2026-03-18","checkin":"2026-04-05","checkout":"2026-04-10","adr":494.82,"rev":2474.1,"src":"Airbnb","los":5,"win":18},{"booked":"2026-03-13","checkin":"2026-04-01","checkout":"2026-04-05","adr":589.75,"rev":2359.0,"src":"Airbnb","los":4,"win":19},{"booked":"2026-03-02","checkin":"2026-03-09","checkout":"2026-03-14","adr":395.8,"rev":1979.0,"src":"Airbnb","los":5,"win":7},{"booked":"2026-02-26","checkin":"2026-03-01","checkout":"2026-03-08","adr":304.76,"rev":2133.32,"src":"Plum Guide","los":7,"win":3},{"booked":"2026-02-16","checkin":"2026-02-26","checkout":"2026-03-01","adr":245.41,"rev":736.22,"src":"Booking.com","los":3,"win":10}],"post":[]},{"id":"6998c2347b1a8d0024a5d2d9","short":"14 Aldford House","nick":"The Jewel of Mayfair","full":"14 Aldford House -- The Jewel of Mayfair","br":4,"minP":1000,"baseP":1250,"maxP":1750,"res":[{"booked":"2026-05-16","checkin":"2026-05-29","checkout":"2026-05-31","adr":960.0,"rev":1920.0,"src":"Airbnb","los":2,"win":13},{"booked":"2026-05-06","checkin":"2027-03-23","checkout":"2027-03-27","adr":1316.25,"rev":5265.0,"src":"Airbnb","los":4,"win":321},{"booked":"2026-05-05","checkin":"2026-05-31","checkout":"2026-06-03","adr":864.0,"rev":2592.0,"src":"Airbnb","los":3,"win":26},{"booked":"2026-05-04","checkin":"2026-05-15","checkout":"2026-05-21","adr":840.0,"rev":5040.0,"src":"Airbnb","los":6,"win":11},{"booked":"2026-04-19","checkin":"2026-04-22","checkout":"2026-04-29","adr":648.0,"rev":4536.0,"src":"Airbnb","los":7,"win":3},{"booked":"2026-04-19","checkin":"2026-06-15","checkout":"2026-06-20","adr":1484.8,"rev":7424.0,"src":"Airbnb","los":5,"win":57},{"booked":"2026-04-15","checkin":"2026-06-04","checkout":"2026-06-13","adr":1335.98,"rev":12023.86,"src":"Direct","los":9,"win":50},{"booked":"2026-04-13","checkin":"2026-04-30","checkout":"2026-05-12","adr":787.45,"rev":9449.46,"src":"Airbnb","los":12,"win":17},{"booked":"2026-04-12","checkin":"2026-05-21","checkout":"2026-05-28","adr":777.6,"rev":5443.2,"src":"Airbnb","los":7,"win":39},{"booked":"2026-04-08","checkin":"2026-04-10","checkout":"2026-04-14","adr":499.95,"rev":1999.79,"src":"Airbnb","los":4,"win":2},{"booked":"2026-04-03","checkin":"2026-04-08","checkout":"2026-04-10","adr":698.8,"rev":1397.6,"src":"Airbnb","los":2,"win":5},{"booked":"2026-03-27","checkin":"2026-03-27","checkout":"2026-04-02","adr":666.67,"rev":4000.0,"src":"Airbnb","los":6,"win":0},{"booked":"2026-03-27","checkin":"2026-04-03","checkout":"2026-04-06","adr":514.32,"rev":1542.96,"src":"Booking.com","los":3,"win":7}],"post":[{"booked":"2026-05-24","checkin":"2026-10-13","checkout":"2026-10-19","adr":1606.65,"rev":9639.9,"src":"Vrbo","los":6,"win":142},{"booked":"2026-05-23","checkin":"2026-06-28","checkout":"2026-07-05","adr":1458.0,"rev":10206.0,"src":"Vrbo","los":7,"win":36},{"booked":"2026-05-23","checkin":"2026-07-05","checkout":"2026-07-15","adr":1950.0,"rev":19500.0,"src":"Airbnb","los":10,"win":43}]},{"id":"679b0e8d2e5e3c0039996014","short":"14 Pond Field House","nick":"Magnificent Londoner","full":"14 Pond Field House -- Magnificent Londoner","br":3,"minP":280,"baseP":500,"maxP":900,"res":[{"booked":"2026-05-18","checkin":"2026-07-30","checkout":"2026-08-06","adr":672.03,"rev":4704.21,"src":"Booking.com","los":7,"win":73},{"booked":"2026-05-07","checkin":"2027-03-07","checkout":"2027-03-12","adr":486.0,"rev":2430.0,"src":"Rentalz","los":5,"win":304},{"booked":"2026-04-28","checkin":"2026-04-29","checkout":"2026-05-01","adr":336.0,"rev":672.0,"src":"Airbnb","los":2,"win":1},{"booked":"2026-04-18","checkin":"2026-04-18","checkout":"2026-04-20","adr":336.15,"rev":672.3,"src":"Airbnb","los":2,"win":0},{"booked":"2026-04-15","checkin":"2026-04-20","checkout":"2026-04-24","adr":310.8,"rev":1243.2,"src":"Airbnb","los":4,"win":5},{"booked":"2026-04-13","checkin":"2026-05-28","checkout":"2026-05-31","adr":567.0,"rev":1701.0,"src":"Airbnb","los":3,"win":45},{"booked":"2026-04-10","checkin":"2026-05-31","checkout":"2026-06-06","adr":457.2,"rev":2743.2,"src":"Airbnb","los":6,"win":51},{"booked":"2026-04-05","checkin":"2026-06-09","checkout":"2026-06-13","adr":562.75,"rev":2251.0,"src":"Airbnb","los":4,"win":65},{"booked":"2026-04-01","checkin":"2026-08-13","checkout":"2026-08-20","adr":609.17,"rev":4264.2,"src":"Airbnb","los":7,"win":134},{"booked":"2026-03-26","checkin":"2026-03-28","checkout":"2026-03-29","adr":486.0,"rev":486.0,"src":"Airbnb","los":1,"win":2},{"booked":"2026-03-22","checkin":"2026-06-27","checkout":"2026-07-04","adr":790.33,"rev":5532.3,"src":"Airbnb","los":7,"win":97},{"booked":"2026-03-14","checkin":"2026-03-18","checkout":"2026-03-21","adr":243.9,"rev":731.7,"src":"Airbnb","los":3,"win":4},{"booked":"2026-03-03","checkin":"2026-08-06","checkout":"2026-08-12","adr":647.83,"rev":3887.0,"src":"Airbnb","los":6,"win":156},{"booked":"2026-03-01","checkin":"2026-07-15","checkout":"2026-07-25","adr":726.56,"rev":7265.6,"src":"Airbnb","los":10,"win":136},{"booked":"2026-02-23","checkin":"2026-05-23","checkout":"2026-05-26","adr":599.33,"rev":1798.0,"src":"Airbnb","los":3,"win":89},{"booked":"2026-02-23","checkin":"2026-06-19","checkout":"2026-06-26","adr":712.36,"rev":4986.55,"src":"Airbnb","los":7,"win":116},{"booked":"2026-02-21","checkin":"2026-02-27","checkout":"2026-03-02","adr":253.0,"rev":759.0,"src":"Airbnb","los":3,"win":6},{"booked":"2026-02-14","checkin":"2026-04-11","checkout":"2026-04-18","adr":449.89,"rev":3149.25,"src":"Airbnb","los":7,"win":56},{"booked":"2026-02-09","checkin":"2026-03-29","checkout":"2026-04-03","adr":450.36,"rev":2251.8,"src":"Airbnb","los":5,"win":48},{"booked":"2026-02-08","checkin":"2026-05-01","checkout":"2026-05-05","adr":478.5,"rev":1914.0,"src":"Airbnb","los":4,"win":82},{"booked":"2026-02-02","checkin":"2026-04-24","checkout":"2026-04-29","adr":478.6,"rev":2393.0,"src":"Airbnb","los":5,"win":81}],"post":[{"booked":"2026-05-24","checkin":"2026-06-06","checkout":"2026-06-09","adr":445.8,"rev":1337.4,"src":"Airbnb","los":3,"win":13}]},{"id":"679b0f30bc740f001271aee0","short":"17 Devonshire Mews W","nick":"Sherlock's Home","full":"17 Devonshire Mews W -- Sherlock's Home","br":3,"minP":300,"baseP":645,"maxP":1300,"res":[{"booked":"2026-05-13","checkin":"2026-05-30","checkout":"2026-06-02","adr":498.3,"rev":1494.9,"src":"Airbnb","los":3,"win":17},{"booked":"2026-05-11","checkin":"2026-06-24","checkout":"2026-06-27","adr":1298.33,"rev":3895.0,"src":"Marriott H&V","los":3,"win":44},{"booked":"2026-05-03","checkin":"2026-05-22","checkout":"2026-05-27","adr":363.85,"rev":1819.26,"src":"Booking.com","los":5,"win":19},{"booked":"2026-05-02","checkin":"2026-07-12","checkout":"2026-07-21","adr":853.47,"rev":7681.23,"src":"Vrbo","los":9,"win":71},{"booked":"2026-04-23","checkin":"2026-10-27","checkout":"2026-11-04","adr":531.92,"rev":4255.33,"src":"Booking.com","los":8,"win":187},{"booked":"2026-04-23","checkin":"2026-05-08","checkout":"2026-05-11","adr":435.3,"rev":1305.9,"src":"Airbnb","los":3,"win":15},{"booked":"2026-04-19","checkin":"2026-05-13","checkout":"2026-05-16","adr":572.4,"rev":1717.2,"src":"Airbnb","los":3,"win":24},{"booked":"2026-04-13","checkin":"2026-06-05","checkout":"2026-06-11","adr":686.4,"rev":4118.4,"src":"Airbnb","los":6,"win":53},{"booked":"2026-04-06","checkin":"2026-07-26","checkout":"2026-07-29","adr":1179.67,"rev":3539.0,"src":"Airbnb","los":3,"win":111},{"booked":"2026-04-05","checkin":"2026-04-10","checkout":"2026-04-13","adr":468.0,"rev":1404.0,"src":"Airbnb","los":3,"win":5},{"booked":"2026-04-02","checkin":"2026-06-19","checkout":"2026-06-22","adr":1190.67,"rev":3572.0,"src":"Marriott H&V","los":3,"win":78},{"booked":"2026-03-31","checkin":"2026-06-27","checkout":"2026-07-03","adr":1394.83,"rev":8369.0,"src":"Marriott H&V","los":6,"win":88},{"booked":"2026-03-23","checkin":"2026-03-24","checkout":"2026-03-25","adr":156.0,"rev":156.0,"src":"Direct","los":1,"win":1},{"booked":"2026-03-20","checkin":"2026-07-31","checkout":"2026-08-08","adr":1133.21,"rev":9065.7,"src":"Airbnb","los":8,"win":133},{"booked":"2026-03-16","checkin":"2026-07-04","checkout":"2026-07-12","adr":1787.5,"rev":14300.0,"src":"Airbnb","los":8,"win":110},{"booked":"2026-03-14","checkin":"2026-03-30","checkout":"2026-04-03","adr":338.28,"rev":1353.11,"src":"Booking.com","los":4,"win":16},{"booked":"2026-03-07","checkin":"2026-05-16","checkout":"2026-05-20","adr":798.75,"rev":3195.0,"src":"Airbnb","los":4,"win":70},{"booked":"2026-03-07","checkin":"2026-03-17","checkout":"2026-03-19","adr":299.27,"rev":598.54,"src":"Expedia","los":2,"win":10}],"post":[]},{"id":"679b236362da3b00125a5a36","short":"17A Devonshire Place","nick":"Marylebone Nook","full":"17A Devonshire Place -- Marylebone Nook","br":1,"minP":200,"baseP":377,"maxP":550,"res":[{"booked":"2026-05-20","checkin":"2026-05-22","checkout":"2026-05-25","adr":214.11,"rev":642.33,"src":"Booking.com","los":3,"win":2},{"booked":"2026-05-16","checkin":"2026-11-07","checkout":"2026-11-14","adr":301.54,"rev":2110.75,"src":"Booking.com","los":7,"win":175},{"booked":"2026-05-13","checkin":"2026-05-17","checkout":"2026-05-19","adr":172.94,"rev":345.88,"src":"Booking.com","los":2,"win":4},{"booked":"2026-05-07","checkin":"2026-05-07","checkout":"2026-05-10","adr":174.42,"rev":523.26,"src":"Booking.com","los":3,"win":0},{"booked":"2026-05-06","checkin":"2026-09-22","checkout":"2026-09-27","adr":414.9,"rev":2074.5,"src":"Booking.com","los":5,"win":139},{"booked":"2026-05-05","checkin":"2026-05-29","checkout":"2026-06-05","adr":251.41,"rev":1759.85,"src":"Booking.com","los":7,"win":24},{"booked":"2026-05-04","checkin":"2026-07-08","checkout":"2026-07-15","adr":452.03,"rev":3164.19,"src":"Booking.com","los":7,"win":65},{"booked":"2026-05-02","checkin":"2026-06-28","checkout":"2026-07-04","adr":558.0,"rev":3348.0,"src":"Booking.com","los":6,"win":57},{"booked":"2026-04-23","checkin":"2026-04-26","checkout":"2026-04-29","adr":171.45,"rev":514.35,"src":"Booking.com","los":3,"win":3},{"booked":"2026-04-20","checkin":"2026-05-19","checkout":"2026-05-21","adr":315.45,"rev":630.9,"src":"Booking.com","los":2,"win":29},{"booked":"2026-04-18","checkin":"2026-08-02","checkout":"2026-08-07","adr":477.44,"rev":2387.2,"src":"Airbnb","los":5,"win":106},{"booked":"2026-04-18","checkin":"2026-05-10","checkout":"2026-05-14","adr":276.98,"rev":1107.9,"src":"Booking.com","los":4,"win":22},{"booked":"2026-04-08","checkin":"2026-06-07","checkout":"2026-06-10","adr":321.67,"rev":965.0,"src":"Marriott H&V","los":3,"win":60},{"booked":"2026-04-05","checkin":"2026-05-15","checkout":"2026-05-17","adr":368.06,"rev":736.13,"src":"Booking.com","los":2,"win":40},{"booked":"2026-04-03","checkin":"2026-04-10","checkout":"2026-04-13","adr":195.0,"rev":585.0,"src":"Booking.com","los":3,"win":7},{"booked":"2026-04-01","checkin":"2026-05-04","checkout":"2026-05-07","adr":257.73,"rev":773.18,"src":"Booking.com","los":3,"win":33},{"booked":"2026-03-29","checkin":"2026-03-29","checkout":"2026-03-30","adr":195.0,"rev":195.0,"src":"Booking.com","los":1,"win":0},{"booked":"2026-03-26","checkin":"2026-03-30","checkout":"2026-04-01","adr":195.0,"rev":390.0,"src":"Booking.com","los":2,"win":4},{"booked":"2026-03-25","checkin":"2026-04-13","checkout":"2026-04-17","adr":270.07,"rev":1080.3,"src":"Booking.com","los":4,"win":19},{"booked":"2026-03-18","checkin":"2026-06-23","checkout":"2026-06-28","adr":543.66,"rev":2718.3,"src":"Booking.com","los":5,"win":97},{"booked":"2026-03-17","checkin":"2026-06-11","checkout":"2026-06-19","adr":411.45,"rev":3291.6,"src":"Booking.com","los":8,"win":86},{"booked":"2026-03-16","checkin":"2026-07-26","checkout":"2026-07-31","adr":453.57,"rev":2267.85,"src":"Booking.com","los":5,"win":132},{"booked":"2026-03-13","checkin":"2026-04-18","checkout":"2026-04-26","adr":259.85,"rev":2078.8,"src":"Booking.com","los":8,"win":36},{"booked":"2026-03-08","checkin":"2026-04-30","checkout":"2026-05-04","adr":256.01,"rev":1024.04,"src":"Booking.com","los":4,"win":53},{"booked":"2026-03-07","checkin":"2026-03-23","checkout":"2026-03-29","adr":162.78,"rev":976.67,"src":"Booking.com","los":6,"win":16},{"booked":"2026-02-27","checkin":"2026-03-13","checkout":"2026-03-16","adr":177.77,"rev":533.32,"src":"Booking.com","los":3,"win":14},{"booked":"2026-02-26","checkin":"2026-03-03","checkout":"2026-03-05","adr":172.25,"rev":344.5,"src":"Booking.com","los":2,"win":5},{"booked":"2026-02-24","checkin":"2026-03-06","checkout":"2026-03-09","adr":214.18,"rev":642.53,"src":"Booking.com","los":3,"win":10},{"booked":"2026-02-18","checkin":"2026-04-06","checkout":"2026-04-09","adr":226.69,"rev":680.07,"src":"Booking.com","los":3,"win":47},{"booked":"2026-02-16","checkin":"2026-02-26","checkout":"2026-03-01","adr":149.5,"rev":448.5,"src":"Booking.com","los":3,"win":10},{"booked":"2026-02-09","checkin":"2026-03-09","checkout":"2026-03-13","adr":178.13,"rev":712.53,"src":"Booking.com","los":4,"win":28},{"booked":"2026-02-03","checkin":"2026-02-14","checkout":"2026-02-18","adr":187.78,"rev":751.13,"src":"Booking.com","los":4,"win":11}],"post":[{"booked":"2026-05-24","checkin":"2026-05-27","checkout":"2026-05-29","adr":204.53,"rev":409.05,"src":"Booking.com","los":2,"win":3},{"booked":"2026-05-23","checkin":"2026-08-10","checkout":"2026-08-17","adr":370.9,"rev":2596.28,"src":"Booking.com","los":7,"win":79},{"booked":"2026-05-22","checkin":"2026-05-25","checkout":"2026-05-27","adr":176.58,"rev":353.16,"src":"Booking.com","los":2,"win":3}]},{"id":"679b2773da32a800107fc7c0","short":"17A1 Devonshre Place","nick":"Diana's Hidden Gem","full":"17A1 Devonshre Place -- Diana's Hidden Gem","br":1,"minP":150,"baseP":300,"maxP":550,"res":[{"booked":"2026-05-20","checkin":"2026-07-06","checkout":"2026-07-31","adr":439.36,"rev":10983.9,"src":"Booking.com","los":25,"win":47},{"booked":"2026-05-19","checkin":"2026-06-05","checkout":"2026-06-09","adr":201.15,"rev":804.6,"src":"Airbnb","los":4,"win":17},{"booked":"2026-05-18","checkin":"2026-06-21","checkout":"2026-06-26","adr":234.11,"rev":1170.56,"src":"Trip.com","los":5,"win":34},{"booked":"2026-05-16","checkin":"2026-05-19","checkout":"2026-05-21","adr":209.25,"rev":418.5,"src":"Airbnb","los":2,"win":3},{"booked":"2026-05-14","checkin":"2026-06-02","checkout":"2026-06-04","adr":199.35,"rev":398.7,"src":"Airbnb","los":2,"win":19},{"booked":"2026-05-13","checkin":"2026-05-31","checkout":"2026-06-02","adr":180.0,"rev":360.0,"src":"Airbnb","los":2,"win":18},{"booked":"2026-05-04","checkin":"2026-05-12","checkout":"2026-05-15","adr":242.67,"rev":728.0,"src":"Airbnb","los":3,"win":8},{"booked":"2026-04-23","checkin":"2026-09-18","checkout":"2026-10-11","adr":336.2,"rev":7732.61,"src":"Booking.com","los":23,"win":148},{"booked":"2026-04-21","checkin":"2026-04-28","checkout":"2026-05-03","adr":184.5,"rev":922.5,"src":"Booking.com","los":5,"win":7},{"booked":"2026-04-14","checkin":"2026-04-14","checkout":"2026-04-18","adr":209.47,"rev":837.9,"src":"Airbnb","los":4,"win":0},{"booked":"2026-04-02","checkin":"2026-04-09","checkout":"2026-04-11","adr":174.96,"rev":349.92,"src":"Booking.com","los":2,"win":7},{"booked":"2026-03-26","checkin":"2026-06-13","checkout":"2026-06-17","adr":323.92,"rev":1295.67,"src":"Booking.com","los":4,"win":79},{"booked":"2026-03-25","checkin":"2026-05-15","checkout":"2026-05-19","adr":235.71,"rev":942.83,"src":"Booking.com","los":4,"win":51},{"booked":"2026-03-24","checkin":"2026-04-11","checkout":"2026-04-14","adr":203.31,"rev":609.92,"src":"Booking.com","los":3,"win":18},{"booked":"2026-03-15","checkin":"2026-03-27","checkout":"2026-03-30","adr":163.58,"rev":490.75,"src":"Booking.com","los":3,"win":12},{"booked":"2026-03-13","checkin":"2026-04-18","checkout":"2026-04-26","adr":247.16,"rev":1977.3,"src":"Booking.com","los":8,"win":36},{"booked":"2026-03-09","checkin":"2026-05-03","checkout":"2026-05-11","adr":242.65,"rev":1941.22,"src":"Booking.com","los":8,"win":55},{"booked":"2026-03-05","checkin":"2026-03-13","checkout":"2026-03-15","adr":207.5,"rev":415.0,"src":"Airbnb","los":2,"win":8},{"booked":"2026-02-25","checkin":"2026-03-30","checkout":"2026-04-03","adr":232.54,"rev":930.15,"src":"Booking.com","los":4,"win":33},{"booked":"2026-02-24","checkin":"2026-04-03","checkout":"2026-04-09","adr":225.22,"rev":1351.35,"src":"Booking.com","los":6,"win":38},{"booked":"2026-02-21","checkin":"2026-02-26","checkout":"2026-03-02","adr":182.63,"rev":730.5,"src":"Airbnb","los":4,"win":5},{"booked":"2026-02-19","checkin":"2026-03-16","checkout":"2026-03-24","adr":212.57,"rev":1700.6,"src":"Booking.com","los":8,"win":25},{"booked":"2026-02-17","checkin":"2026-03-10","checkout":"2026-03-13","adr":242.7,"rev":728.1,"src":"Airbnb","los":3,"win":21},{"booked":"2026-02-10","checkin":"2026-02-20","checkout":"2026-02-26","adr":268.67,"rev":1612.0,"src":"Airbnb","los":6,"win":10},{"booked":"2026-02-06","checkin":"2026-02-11","checkout":"2026-02-13","adr":156.0,"rev":312.0,"src":"Airbnb","los":2,"win":5},{"booked":"2026-02-06","checkin":"2026-02-13","checkout":"2026-02-16","adr":156.13,"rev":468.39,"src":"Booking.com","los":3,"win":7},{"booked":"2026-02-05","checkin":"2026-02-07","checkout":"2026-02-09","adr":156.0,"rev":312.0,"src":"Airbnb","los":2,"win":2}],"post":[{"booked":"2026-05-26","checkin":"2026-10-16","checkout":"2026-10-23","adr":270.08,"rev":1890.54,"src":"Booking.com","los":7,"win":143}]},{"id":"679b2748e1c8520013d0c646","short":"17B Devonshire Place","nick":"Marylebone Garden Oasis","full":"17B Devonshire Place -- Marylebone Garden Oasis","br":2,"minP":200,"baseP":484,"maxP":900,"res":[{"booked":"2026-05-09","checkin":"2026-05-22","checkout":"2026-05-29","adr":333.33,"rev":2333.29,"src":"Booking.com","los":7,"win":13},{"booked":"2026-05-08","checkin":"2026-10-13","checkout":"2026-10-20","adr":486.74,"rev":3407.18,"src":"Booking.com","los":7,"win":158},{"booked":"2026-05-04","checkin":"2026-05-04","checkout":"2026-05-06","adr":237.6,"rev":475.2,"src":"Booking.com","los":2,"win":0},{"booked":"2026-05-03","checkin":"2026-07-22","checkout":"2026-07-28","adr":669.33,"rev":4016.0,"src":"Booking.com","los":6,"win":80},{"booked":"2026-05-01","checkin":"2026-05-13","checkout":"2026-05-16","adr":365.1,"rev":1095.3,"src":"Booking.com","los":3,"win":12},{"booked":"2026-05-01","checkin":"2026-06-18","checkout":"2026-06-22","adr":626.63,"rev":2506.5,"src":"Booking.com","los":4,"win":48},{"booked":"2026-04-27","checkin":"2026-08-21","checkout":"2026-09-06","adr":485.53,"rev":7768.52,"src":"Booking.com","los":16,"win":116},{"booked":"2026-04-24","checkin":"2026-04-27","checkout":"2026-04-30","adr":228.6,"rev":685.8,"src":"Booking.com","los":3,"win":3},{"booked":"2026-04-19","checkin":"2026-05-01","checkout":"2026-05-04","adr":342.33,"rev":1027.0,"src":"Booking.com","los":3,"win":12},{"booked":"2026-04-13","checkin":"2026-04-13","checkout":"2026-04-15","adr":219.91,"rev":439.83,"src":"Booking.com","los":2,"win":0},{"booked":"2026-04-05","checkin":"2026-06-04","checkout":"2026-06-15","adr":545.73,"rev":6003.07,"src":"Booking.com","los":11,"win":60},{"booked":"2026-04-04","checkin":"2026-04-18","checkout":"2026-04-26","adr":306.27,"rev":2450.17,"src":"Booking.com","los":8,"win":14},{"booked":"2026-03-29","checkin":"2026-05-30","checkout":"2026-06-04","adr":515.45,"rev":2577.25,"src":"Booking.com","los":5,"win":62},{"booked":"2026-03-20","checkin":"2026-05-16","checkout":"2026-05-21","adr":599.6,"rev":2998.0,"src":"Direct","los":5,"win":57},{"booked":"2026-03-15","checkin":"2026-05-06","checkout":"2026-05-13","adr":437.0,"rev":3059.0,"src":"Marriott H&V","los":7,"win":52},{"booked":"2026-03-10","checkin":"2026-03-23","checkout":"2026-03-29","adr":252.53,"rev":1515.15,"src":"Booking.com","los":6,"win":13},{"booked":"2026-03-01","checkin":"2026-04-05","checkout":"2026-04-11","adr":378.63,"rev":2271.75,"src":"Booking.com","los":6,"win":35},{"booked":"2026-02-27","checkin":"2026-03-29","checkout":"2026-04-03","adr":393.71,"rev":1968.53,"src":"Booking.com","los":5,"win":30},{"booked":"2026-02-05","checkin":"2026-02-13","checkout":"2026-02-17","adr":325.0,"rev":1300.0,"src":"Airbnb","los":4,"win":8},{"booked":"2026-02-04","checkin":"2026-02-19","checkout":"2026-03-21","adr":223.88,"rev":6716.52,"src":"Blueground","los":30,"win":15}],"post":[{"booked":"2026-05-23","checkin":"2026-07-09","checkout":"2026-07-17","adr":600.75,"rev":4806.0,"src":"Agoda","los":8,"win":47}]},{"id":"679b27aefabe790013d94352","short":"17C Devonshire Place","nick":"Be More Elizabeth!!","full":"17C Devonshire Place -- Be More Elizabeth!!","br":2,"minP":350,"baseP":800,"maxP":1300,"res":[{"booked":"2026-05-19","checkin":"2026-06-03","checkout":"2026-06-07","adr":646.65,"rev":2586.6,"src":"Airbnb","los":4,"win":15},{"booked":"2026-05-18","checkin":"2026-06-22","checkout":"2026-06-26","adr":713.14,"rev":2852.58,"src":"Trip.com","los":4,"win":35},{"booked":"2026-05-07","checkin":"2026-05-24","checkout":"2026-05-27","adr":504.6,"rev":1513.8,"src":"Booking.com","los":3,"win":17},{"booked":"2026-04-14","checkin":"2026-05-27","checkout":"2026-05-31","adr":1024.65,"rev":4098.6,"src":"Airbnb","los":4,"win":43},{"booked":"2026-04-12","checkin":"2027-02-02","checkout":"2027-02-04","adr":11.91,"rev":23.83,"src":"Booking.com","los":2,"win":296},{"booked":"2026-04-11","checkin":"2026-09-08","checkout":"2026-09-13","adr":1438.2,"rev":7191.0,"src":"Direct","los":5,"win":150},{"booked":"2026-03-13","checkin":"2026-05-17","checkout":"2026-05-23","adr":890.85,"rev":5345.1,"src":"Vrbo","los":6,"win":65},{"booked":"2026-02-12","checkin":"2026-02-01","checkout":"2026-05-15","adr":646.2,"rev":66559.03,"src":"Direct","los":103,"win":-11}],"post":[]},{"id":"679b27820b4ef400126385bf","short":"17D Devonshire Place","nick":"Queen Elizabeth ll","full":"17D Devonshire Place -- Queen Elizabeth ll","br":2,"minP":300,"baseP":645,"maxP":1400,"res":[{"booked":"2026-05-18","checkin":"2026-06-22","checkout":"2026-06-26","adr":605.38,"rev":2421.54,"src":"Trip.com","los":4,"win":35},{"booked":"2026-05-13","checkin":"2026-08-08","checkout":"2026-08-15","adr":610.21,"rev":4271.48,"src":"Booking.com","los":7,"win":87},{"booked":"2026-05-10","checkin":"2026-05-16","checkout":"2026-05-20","adr":402.75,"rev":1611.0,"src":"Booking.com","los":4,"win":6},{"booked":"2026-05-07","checkin":"2026-05-30","checkout":"2026-06-04","adr":736.27,"rev":3681.35,"src":"Vrbo","los":5,"win":23},{"booked":"2026-04-26","checkin":"2026-05-02","checkout":"2026-05-05","adr":325.8,"rev":977.4,"src":"Booking.com","los":3,"win":6},{"booked":"2026-04-26","checkin":"2026-05-20","checkout":"2026-05-25","adr":514.51,"rev":2572.56,"src":"Booking.com","los":5,"win":24},{"booked":"2026-04-25","checkin":"2026-05-11","checkout":"2026-05-14","adr":425.33,"rev":1276.0,"src":"Marriott H&V","los":3,"win":16},{"booked":"2026-04-21","checkin":"2026-05-07","checkout":"2026-05-10","adr":264.33,"rev":792.98,"src":"Booking.com","los":3,"win":16},{"booked":"2026-04-20","checkin":"2026-06-07","checkout":"2026-06-21","adr":623.97,"rev":8735.54,"src":"Booking.com","los":14,"win":48},{"booked":"2026-04-19","checkin":"2026-04-29","checkout":"2026-05-02","adr":302.13,"rev":906.39,"src":"Booking.com","los":3,"win":10},{"booked":"2026-04-18","checkin":"2026-07-09","checkout":"2026-07-13","adr":1104.75,"rev":4419.0,"src":"Booking.com","los":4,"win":82},{"booked":"2026-04-16","checkin":"2026-07-26","checkout":"2026-08-01","adr":1089.83,"rev":6539.0,"src":"Airbnb","los":6,"win":101},{"booked":"2026-04-13","checkin":"2026-05-26","checkout":"2026-05-30","adr":771.98,"rev":3087.9,"src":"Vrbo","los":4,"win":43},{"booked":"2026-04-09","checkin":"2026-04-14","checkout":"2026-04-18","adr":381.96,"rev":1527.83,"src":"Booking.com","los":4,"win":5},{"booked":"2026-03-29","checkin":"2026-07-14","checkout":"2026-07-24","adr":1030.4,"rev":10304.01,"src":"Vrbo","los":10,"win":107},{"booked":"2026-03-07","checkin":"2026-03-16","checkout":"2026-03-19","adr":292.5,"rev":877.5,"src":"Booking.com","los":3,"win":9},{"booked":"2026-03-07","checkin":"2026-03-26","checkout":"2026-03-30","adr":557.5,"rev":2230.0,"src":"Airbnb","los":4,"win":19},{"booked":"2026-03-06","checkin":"2026-03-08","checkout":"2026-03-11","adr":263.25,"rev":789.75,"src":"Booking.com","los":3,"win":2},{"booked":"2026-03-02","checkin":"2026-03-04","checkout":"2026-03-08","adr":263.69,"rev":1054.76,"src":"Booking.com","los":4,"win":2},{"booked":"2026-03-01","checkin":"2026-04-06","checkout":"2026-04-11","adr":412.25,"rev":2061.25,"src":"Booking.com","los":5,"win":36},{"booked":"2026-02-28","checkin":"2026-03-20","checkout":"2026-03-26","adr":337.69,"rev":2026.16,"src":"Booking.com","los":6,"win":20},{"booked":"2026-02-25","checkin":"2026-07-03","checkout":"2026-07-08","adr":1100.21,"rev":5501.05,"src":"Booking.com","los":5,"win":128},{"booked":"2026-02-24","checkin":"2026-04-21","checkout":"2026-04-26","adr":628.2,"rev":3141.0,"src":"Vrbo","los":5,"win":56},{"booked":"2026-02-09","checkin":"2026-04-01","checkout":"2026-04-05","adr":511.17,"rev":2044.67,"src":"Booking.com","los":4,"win":51}],"post":[]},{"id":"679b236f13f4690011818185","short":"17E Devonshire Place","nick":"Regent's Retreat","full":"17E Devonshire Place -- Regent's Retreat","br":2,"minP":300,"baseP":600,"maxP":1200,"res":[{"booked":"2026-05-20","checkin":"2026-05-27","checkout":"2026-06-02","adr":449.32,"rev":2695.9,"src":"Airbnb","los":6,"win":7},{"booked":"2026-05-18","checkin":"2026-06-21","checkout":"2026-06-26","adr":873.4,"rev":4367.0,"src":"Agoda","los":5,"win":34},{"booked":"2026-05-07","checkin":"2026-06-08","checkout":"2026-06-19","adr":815.24,"rev":8967.6,"src":"Airbnb","los":11,"win":32},{"booked":"2026-05-03","checkin":"2026-08-05","checkout":"2026-08-08","adr":804.3,"rev":2412.9,"src":"Booking.com","los":3,"win":94},{"booked":"2026-04-14","checkin":"2026-04-30","checkout":"2026-05-16","adr":457.14,"rev":7314.3,"src":"Airbnb","los":16,"win":16},{"booked":"2026-04-10","checkin":"2026-04-12","checkout":"2026-04-17","adr":351.0,"rev":1755.0,"src":"Airbnb","los":5,"win":2},{"booked":"2026-03-26","checkin":"2026-05-23","checkout":"2026-05-27","adr":746.75,"rev":2987.0,"src":"Airbnb","los":4,"win":58},{"booked":"2026-03-23","checkin":"2026-04-05","checkout":"2026-04-07","adr":508.5,"rev":1017.0,"src":"Airbnb","los":2,"win":13},{"booked":"2026-03-14","checkin":"2026-07-30","checkout":"2026-08-05","adr":982.67,"rev":5896.0,"src":"Airbnb","los":6,"win":138},{"booked":"2026-02-27","checkin":"2026-03-08","checkout":"2026-03-12","adr":261.43,"rev":1045.7,"src":"Expedia","los":4,"win":9},{"booked":"2026-02-24","checkin":"2026-02-25","checkout":"2026-02-27","adr":181.64,"rev":363.28,"src":"Booking.com","los":2,"win":1},{"booked":"2026-02-21","checkin":"2026-04-17","checkout":"2026-04-21","adr":721.0,"rev":2884.0,"src":"Airbnb","los":4,"win":55},{"booked":"2026-02-18","checkin":"2026-05-16","checkout":"2026-05-19","adr":669.67,"rev":2009.0,"src":"Airbnb","los":3,"win":87},{"booked":"2026-02-13","checkin":"2026-12-02","checkout":"2026-12-09","adr":939.47,"rev":6576.3,"src":"Plum Guide","los":7,"win":292},{"booked":"2026-02-07","checkin":"2026-04-08","checkout":"2026-04-12","adr":380.46,"rev":1521.85,"src":"Booking.com","los":4,"win":60}],"post":[{"booked":"2026-05-24","checkin":"2026-09-02","checkout":"2026-09-07","adr":773.64,"rev":3868.2,"src":"Airbnb","los":5,"win":101},{"booked":"2026-05-22","checkin":"2026-06-05","checkout":"2026-06-08","adr":507.0,"rev":1521.0,"src":"Booking.com","los":3,"win":14}]},{"id":"679b235b2e9626001105b891","short":"17F Devonshire Place","nick":"Devonshire's Elegance","full":"17F Devonshire Place -- Devonshire's Elegance","br":3,"minP":300,"baseP":550,"maxP":1200,"res":[{"booked":"2026-05-10","checkin":"2026-10-17","checkout":"2026-10-22","adr":743.22,"rev":3716.1,"src":"Airbnb","los":5,"win":160},{"booked":"2026-05-08","checkin":"2027-02-27","checkout":"2027-03-06","adr":371.31,"rev":2599.2,"src":"Booking.com","los":7,"win":295},{"booked":"2026-05-06","checkin":"2026-06-13","checkout":"2026-06-19","adr":581.52,"rev":3489.12,"src":"Airbnb","los":6,"win":38},{"booked":"2026-05-05","checkin":"2026-05-22","checkout":"2026-05-25","adr":413.1,"rev":1239.3,"src":"Booking.com","los":3,"win":17},{"booked":"2026-04-27","checkin":"2026-05-13","checkout":"2026-05-18","adr":367.6,"rev":1838.0,"src":"Airbnb","los":5,"win":16},{"booked":"2026-04-27","checkin":"2026-07-31","checkout":"2026-08-04","adr":773.4,"rev":3093.6,"src":"Airbnb","los":4,"win":95},{"booked":"2026-04-24","checkin":"2026-08-23","checkout":"2026-08-28","adr":582.93,"rev":2914.64,"src":"Expedia","los":5,"win":121},{"booked":"2026-04-23","checkin":"2027-01-11","checkout":"2027-01-18","adr":323.56,"rev":2264.89,"src":"Booking.com","los":7,"win":263},{"booked":"2026-04-21","checkin":"2026-05-18","checkout":"2026-05-22","adr":507.0,"rev":2028.01,"src":"Hotels.com","los":4,"win":27},{"booked":"2026-04-18","checkin":"2026-04-26","checkout":"2026-04-29","adr":277.44,"rev":832.32,"src":"Airbnb","los":3,"win":8},{"booked":"2026-04-13","checkin":"2026-05-26","checkout":"2026-05-29","adr":554.67,"rev":1664.0,"src":"Vrbo","los":3,"win":43},{"booked":"2026-04-10","checkin":"2026-07-13","checkout":"2026-07-18","adr":780.6,"rev":3903.02,"src":"Hotels.com","los":5,"win":94},{"booked":"2026-04-08","checkin":"2026-08-04","checkout":"2026-08-11","adr":713.14,"rev":4992.0,"src":"Marriott H&V","los":7,"win":118},{"booked":"2026-04-06","checkin":"2026-06-10","checkout":"2026-06-13","adr":659.75,"rev":1979.25,"src":"Booking.com","los":3,"win":65},{"booked":"2026-03-28","checkin":"2026-04-24","checkout":"2026-04-26","adr":539.55,"rev":1079.1,"src":"Vrbo","los":2,"win":27},{"booked":"2026-03-20","checkin":"2026-03-21","checkout":"2026-03-24","adr":270.83,"rev":812.5,"src":"Booking.com","los":3,"win":1},{"booked":"2026-03-13","checkin":"2026-05-31","checkout":"2026-06-07","adr":634.86,"rev":4444.0,"src":"Marriott H&V","los":7,"win":79},{"booked":"2026-03-08","checkin":"2026-03-09","checkout":"2026-03-11","adr":243.75,"rev":487.5,"src":"Booking.com","los":2,"win":1},{"booked":"2026-03-01","checkin":"2026-03-18","checkout":"2026-03-21","adr":318.83,"rev":956.48,"src":"Booking.com","los":3,"win":17},{"booked":"2026-02-28","checkin":"2026-05-01","checkout":"2026-05-05","adr":530.4,"rev":2121.6,"src":"Booking.com","los":4,"win":62},{"booked":"2026-02-28","checkin":"2026-07-23","checkout":"2026-07-31","adr":823.16,"rev":6585.26,"src":"Expedia","los":8,"win":145},{"booked":"2026-02-26","checkin":"2026-06-23","checkout":"2026-06-29","adr":965.74,"rev":5794.43,"src":"Booking.com","los":6,"win":117},{"booked":"2026-02-23","checkin":"2026-03-24","checkout":"2026-03-31","adr":498.06,"rev":3486.43,"src":"Expedia","los":7,"win":29},{"booked":"2026-02-11","checkin":"2026-02-23","checkout":"2026-02-27","adr":270.27,"rev":1081.09,"src":"Booking.com","los":4,"win":12},{"booked":"2026-02-04","checkin":"2026-04-02","checkout":"2026-04-08","adr":573.07,"rev":3438.4,"src":"Airbnb","los":6,"win":57},{"booked":"2026-02-02","checkin":"2026-02-12","checkout":"2026-02-16","adr":322.0,"rev":1288.0,"src":"Airbnb","los":4,"win":10},{"booked":"2026-02-01","checkin":"2026-03-11","checkout":"2026-03-15","adr":452.6,"rev":1810.4,"src":"Airbnb","los":4,"win":38}],"post":[{"booked":"2026-05-24","checkin":"2026-05-29","checkout":"2026-05-31","adr":360.0,"rev":720.0,"src":"Booking.com","los":2,"win":5},{"booked":"2026-05-23","checkin":"2026-06-08","checkout":"2026-06-10","adr":439.02,"rev":878.04,"src":"Airbnb","los":2,"win":16},{"booked":"2026-05-23","checkin":"2026-07-01","checkout":"2026-07-12","adr":953.37,"rev":10487.05,"src":"Booking.com","los":11,"win":39},{"booked":"2026-05-23","checkin":"2026-07-18","checkout":"2026-07-22","adr":714.83,"rev":2859.3,"src":"Airbnb","los":4,"win":56}]},{"id":"679b2377f2c3360011b38926","short":"17G Devonshire Place","nick":"Marylebone's Gem","full":"17G Devonshire Place -- Marylebone's Gem","br":1,"minP":150,"baseP":350,"maxP":620,"res":[{"booked":"2026-05-20","checkin":"2026-06-08","checkout":"2026-06-10","adr":231.3,"rev":462.6,"src":"Booking.com","los":2,"win":19},{"booked":"2026-05-19","checkin":"2026-09-03","checkout":"2026-09-13","adr":411.73,"rev":4117.3,"src":"Booking.com","los":10,"win":107},{"booked":"2026-05-14","checkin":"2026-05-18","checkout":"2026-05-21","adr":250.5,"rev":751.5,"src":"Airbnb","los":3,"win":4},{"booked":"2026-05-14","checkin":"2026-06-02","checkout":"2026-06-05","adr":219.9,"rev":659.7,"src":"Booking.com","los":3,"win":19},{"booked":"2026-05-14","checkin":"2026-05-14","checkout":"2026-05-17","adr":261.6,"rev":784.8,"src":"Airbnb","los":3,"win":0},{"booked":"2026-05-13","checkin":"2027-02-20","checkout":"2027-02-26","adr":253.65,"rev":1521.9,"src":"Booking.com","los":6,"win":283},{"booked":"2026-05-05","checkin":"2026-08-27","checkout":"2026-09-03","adr":431.38,"rev":3019.68,"src":"Direct","los":7,"win":114},{"booked":"2026-05-04","checkin":"2026-06-15","checkout":"2026-06-19","adr":399.38,"rev":1597.5,"src":"Booking.com","los":4,"win":42},{"booked":"2026-04-27","checkin":"2026-05-07","checkout":"2026-05-10","adr":229.67,"rev":689.0,"src":"Booking.com","los":3,"win":10},{"booked":"2026-04-26","checkin":"2026-05-03","checkout":"2026-05-07","adr":251.44,"rev":1005.76,"src":"Plum Guide","los":4,"win":7},{"booked":"2026-04-24","checkin":"2026-08-10","checkout":"2026-08-20","adr":413.44,"rev":4134.4,"src":"Booking.com","los":10,"win":108},{"booked":"2026-04-19","checkin":"2026-04-21","checkout":"2026-04-23","adr":198.45,"rev":396.9,"src":"Airbnb","los":2,"win":2},{"booked":"2026-04-19","checkin":"2026-06-30","checkout":"2026-07-06","adr":421.6,"rev":2529.6,"src":"Trip.com","los":6,"win":72},{"booked":"2026-04-12","checkin":"2026-04-12","checkout":"2026-04-14","adr":175.5,"rev":351.0,"src":"Airbnb","los":2,"win":0},{"booked":"2026-04-10","checkin":"2026-07-10","checkout":"2026-07-15","adr":665.17,"rev":3325.83,"src":"Booking.com","los":5,"win":91},{"booked":"2026-04-04","checkin":"2026-06-10","checkout":"2026-06-15","adr":419.25,"rev":2096.25,"src":"Booking.com","los":5,"win":67},{"booked":"2026-03-25","checkin":"2026-03-26","checkout":"2026-03-29","adr":190.67,"rev":572.01,"src":"Blueground","los":3,"win":1},{"booked":"2026-03-24","checkin":"2026-04-14","checkout":"2026-04-21","adr":261.16,"rev":1828.13,"src":"Booking.com","los":7,"win":21},{"booked":"2026-03-24","checkin":"2026-03-30","checkout":"2026-04-01","adr":195.0,"rev":390.0,"src":"Booking.com","los":2,"win":6},{"booked":"2026-03-23","checkin":"2026-03-23","checkout":"2026-03-26","adr":184.17,"rev":552.5,"src":"Booking.com","los":3,"win":0},{"booked":"2026-03-21","checkin":"2026-06-25","checkout":"2026-06-30","adr":525.0,"rev":2625.0,"src":"Marriott H&V","los":5,"win":96},{"booked":"2026-03-19","checkin":"2026-03-21","checkout":"2026-03-23","adr":216.66,"rev":433.33,"src":"Booking.com","los":2,"win":2},{"booked":"2026-03-17","checkin":"2026-07-16","checkout":"2026-07-26","adr":488.3,"rev":4883.0,"src":"Marriott H&V","los":10,"win":121},{"booked":"2026-03-12","checkin":"2026-03-17","checkout":"2026-03-20","adr":216.67,"rev":650.0,"src":"Booking.com","los":3,"win":5},{"booked":"2026-03-04","checkin":"2026-03-07","checkout":"2026-03-12","adr":195.0,"rev":975.0,"src":"Booking.com","los":5,"win":3},{"booked":"2026-03-01","checkin":"2026-04-23","checkout":"2026-04-30","adr":319.8,"rev":2238.6,"src":"Booking.com","los":7,"win":53},{"booked":"2026-02-21","checkin":"2026-03-12","checkout":"2026-03-16","adr":272.46,"rev":1089.83,"src":"Booking.com","los":4,"win":19},{"booked":"2026-02-21","checkin":"2026-04-30","checkout":"2026-05-03","adr":304.85,"rev":914.55,"src":"Booking.com","los":3,"win":68},{"booked":"2026-02-16","checkin":"2026-05-23","checkout":"2026-05-30","adr":330.52,"rev":2313.67,"src":"Booking.com","los":7,"win":96},{"booked":"2026-02-08","checkin":"2026-04-08","checkout":"2026-04-12","adr":216.52,"rev":866.09,"src":"Booking.com","los":4,"win":59}],"post":[]},{"id":"679b27b6f0df930011ffeadd","short":"17H Devonshire Place","nick":"The Peaky Blinders","full":"17H Devonshire Place -- The Peaky Blinders","br":1,"minP":180,"baseP":350,"maxP":620,"res":[{"booked":"2026-05-21","checkin":"2026-07-22","checkout":"2026-07-27","adr":459.9,"rev":2299.5,"src":"Booking.com","los":5,"win":62},{"booked":"2026-05-16","checkin":"2027-03-01","checkout":"2027-03-08","adr":232.19,"rev":1625.35,"src":"Booking.com","los":7,"win":289},{"booked":"2026-05-04","checkin":"2026-05-15","checkout":"2026-05-18","adr":231.9,"rev":695.7,"src":"Booking.com","los":3,"win":11},{"booked":"2026-04-29","checkin":"2027-06-27","checkout":"2027-07-06","adr":589.0,"rev":5301.0,"src":"Booking.com","los":9,"win":424},{"booked":"2026-04-26","checkin":"2026-06-03","checkout":"2026-06-06","adr":342.3,"rev":1026.9,"src":"Booking.com","los":3,"win":38},{"booked":"2026-04-11","checkin":"2026-04-21","checkout":"2026-04-23","adr":181.5,"rev":363.0,"src":"Airbnb","los":2,"win":10},{"booked":"2026-04-11","checkin":"2026-06-29","checkout":"2026-07-06","adr":558.0,"rev":3906.0,"src":"Airbnb","los":7,"win":79},{"booked":"2026-04-10","checkin":"2026-08-08","checkout":"2026-08-20","adr":400.05,"rev":4800.6,"src":"Airbnb","los":12,"win":120},{"booked":"2026-03-30","checkin":"2026-06-09","checkout":"2026-06-13","adr":374.25,"rev":1497.0,"src":"Airbnb","los":4,"win":71},{"booked":"2026-03-23","checkin":"2026-04-10","checkout":"2026-04-12","adr":180.0,"rev":360.0,"src":"Airbnb","los":2,"win":18},{"booked":"2026-03-23","checkin":"2026-05-18","checkout":"2026-05-25","adr":323.23,"rev":2262.6,"src":"Airbnb","los":7,"win":56},{"booked":"2026-03-12","checkin":"2026-03-26","checkout":"2026-04-06","adr":249.42,"rev":2743.6,"src":"Airbnb","los":11,"win":14},{"booked":"2026-03-08","checkin":"2026-03-23","checkout":"2026-03-26","adr":180.05,"rev":540.15,"src":"Booking.com","los":3,"win":15},{"booked":"2026-03-05","checkin":"2026-03-14","checkout":"2026-03-18","adr":194.75,"rev":779.0,"src":"Airbnb","los":4,"win":9},{"booked":"2026-02-26","checkin":"2026-05-08","checkout":"2026-05-14","adr":330.0,"rev":1980.0,"src":"Airbnb","los":6,"win":71},{"booked":"2026-02-23","checkin":"2026-05-27","checkout":"2026-06-03","adr":349.19,"rev":2444.35,"src":"Airbnb","los":7,"win":93},{"booked":"2026-02-12","checkin":"2026-04-06","checkout":"2026-04-10","adr":276.07,"rev":1104.3,"src":"Airbnb","los":4,"win":53},{"booked":"2026-02-08","checkin":"2026-03-11","checkout":"2026-03-14","adr":251.1,"rev":753.3,"src":"Airbnb","los":3,"win":31},{"booked":"2026-02-08","checkin":"2026-02-10","checkout":"2026-02-13","adr":151.16,"rev":453.48,"src":"Booking.com","los":3,"win":2},{"booked":"2026-02-07","checkin":"2026-04-24","checkout":"2026-04-28","adr":341.25,"rev":1365.0,"src":"Airbnb","los":4,"win":76},{"booked":"2026-02-04","checkin":"2026-07-12","checkout":"2026-07-18","adr":585.33,"rev":3512.0,"src":"Airbnb","los":6,"win":158}],"post":[]},{"id":"6998c282ec3ff00014463fd6","short":"25 Aldford House","nick":"Once Upon A Mayfair","full":"25 Aldford House -- Once Upon A Mayfair","br":4,"minP":1000,"baseP":1200,"maxP":1500,"res":[{"booked":"2026-05-19","checkin":"2026-05-20","checkout":"2026-05-25","adr":689.64,"rev":3448.18,"src":"Booking.com","los":5,"win":1},{"booked":"2026-05-03","checkin":"2026-05-26","checkout":"2026-06-01","adr":695.25,"rev":4171.5,"src":"Booking.com","los":6,"win":23},{"booked":"2026-04-27","checkin":"2026-05-09","checkout":"2026-05-13","adr":756.0,"rev":3024.0,"src":"Vrbo","los":4,"win":12},{"booked":"2026-04-21","checkin":"2026-04-21","checkout":"2026-04-24","adr":648.0,"rev":1944.0,"src":"Airbnb","los":3,"win":0},{"booked":"2026-04-14","checkin":"2026-04-30","checkout":"2026-05-03","adr":923.4,"rev":2770.2,"src":"Airbnb","los":3,"win":16},{"booked":"2026-04-07","checkin":"2026-04-17","checkout":"2026-04-21","adr":1060.38,"rev":4241.52,"src":"Plum Guide","los":4,"win":10},{"booked":"2026-04-02","checkin":"2026-04-04","checkout":"2026-04-07","adr":649.5,"rev":1948.5,"src":"Airbnb","los":3,"win":2},{"booked":"2026-03-29","checkin":"2026-04-24","checkout":"2026-04-27","adr":984.6,"rev":2953.8,"src":"Airbnb","los":3,"win":26},{"booked":"2026-03-28","checkin":"2026-05-16","checkout":"2026-05-20","adr":775.98,"rev":3103.92,"src":"Airbnb","los":4,"win":49},{"booked":"2026-03-28","checkin":"2026-04-08","checkout":"2026-04-11","adr":576.0,"rev":1728.0,"src":"Airbnb","los":3,"win":11},{"booked":"2026-03-26","checkin":"2026-03-27","checkout":"2026-04-04","adr":388.8,"rev":3110.4,"src":"Booking.com","los":8,"win":1},{"booked":"2026-03-11","checkin":"2026-03-18","checkout":"2026-03-23","adr":627.36,"rev":3136.8,"src":"Airbnb","los":5,"win":7}],"post":[]},{"id":"67b372b500a8d80010af725c","short":"39k Emperor's Gate","nick":"Emperor's Lounge","full":"39k Emperor's Gate -- Emperor's Lounge","br":2,"minP":200,"baseP":500,"maxP":900,"res":[{"booked":"2026-05-21","checkin":"2026-05-23","checkout":"2026-05-25","adr":275.4,"rev":550.8,"src":"Airbnb","los":2,"win":2},{"booked":"2026-04-04","checkin":"2026-05-30","checkout":"2026-06-09","adr":384.84,"rev":3848.4,"src":"Airbnb","los":10,"win":56},{"booked":"2026-04-02","checkin":"2026-04-17","checkout":"2026-04-19","adr":235.35,"rev":470.7,"src":"Airbnb","los":2,"win":15},{"booked":"2026-04-02","checkin":"2026-07-08","checkout":"2026-07-11","adr":585.33,"rev":1756.0,"src":"Marriott H&V","los":3,"win":97},{"booked":"2026-03-30","checkin":"2026-07-17","checkout":"2026-07-24","adr":463.89,"rev":3247.2,"src":"Airbnb","los":7,"win":109},{"booked":"2026-03-24","checkin":"2026-06-17","checkout":"2026-06-21","adr":475.0,"rev":1900.0,"src":"Airbnb","los":4,"win":85},{"booked":"2026-03-24","checkin":"2026-06-12","checkout":"2026-06-17","adr":449.8,"rev":2249.0,"src":"Marriott H&V","los":5,"win":80},{"booked":"2026-03-24","checkin":"2026-04-14","checkout":"2026-04-17","adr":282.0,"rev":846.0,"src":"Airbnb","los":3,"win":21},{"booked":"2026-03-23","checkin":"2026-04-30","checkout":"2026-05-05","adr":326.52,"rev":1632.6,"src":"Airbnb","los":5,"win":38},{"booked":"2026-03-22","checkin":"2026-03-23","checkout":"2026-03-25","adr":180.0,"rev":360.0,"src":"Airbnb","los":2,"win":1},{"booked":"2026-03-14","checkin":"2026-03-31","checkout":"2026-04-04","adr":303.0,"rev":1212.0,"src":"Airbnb","los":4,"win":17},{"booked":"2026-03-06","checkin":"2026-05-25","checkout":"2026-05-30","adr":360.4,"rev":1802.0,"src":"Airbnb","los":5,"win":80},{"booked":"2026-03-04","checkin":"2026-06-25","checkout":"2026-06-28","adr":688.67,"rev":2066.0,"src":"Airbnb","los":3,"win":113},{"booked":"2026-03-02","checkin":"2026-03-20","checkout":"2026-03-23","adr":221.33,"rev":664.0,"src":"Airbnb","los":3,"win":18},{"booked":"2026-03-01","checkin":"2026-06-28","checkout":"2026-07-08","adr":674.6,"rev":6745.95,"src":"Airbnb","los":10,"win":119},{"booked":"2026-02-20","checkin":"2026-07-25","checkout":"2026-07-31","adr":577.5,"rev":3465.0,"src":"Airbnb","los":6,"win":155},{"booked":"2026-02-16","checkin":"2026-03-26","checkout":"2026-03-31","adr":326.7,"rev":1633.5,"src":"Airbnb","los":5,"win":38},{"booked":"2026-02-15","checkin":"2026-04-04","checkout":"2026-04-11","adr":324.17,"rev":2269.18,"src":"Airbnb","los":7,"win":48},{"booked":"2026-02-02","checkin":"2026-02-02","checkout":"2026-02-04","adr":247.5,"rev":495.0,"src":"Direct","los":2,"win":0},{"booked":"2026-02-01","checkin":"2026-02-27","checkout":"2026-03-01","adr":266.08,"rev":532.17,"src":"Booking.com","los":2,"win":26}],"post":[]},{"id":"679b0ebb3917990012e2c457","short":"76a Belsize Road","nick":"Fabulous Four Residence","full":"76a Belsize Road -- Fabulous Four Residence","br":4,"minP":300,"baseP":538,"maxP":1200,"res":[{"booked":"2026-05-14","checkin":"2026-11-03","checkout":"2026-11-09","adr":546.9,"rev":3281.4,"src":"Airbnb","los":6,"win":173},{"booked":"2026-05-10","checkin":"2027-05-19","checkout":"2027-05-23","adr":686.92,"rev":2747.7,"src":"Airbnb","los":4,"win":374},{"booked":"2026-05-07","checkin":"2026-07-19","checkout":"2026-07-23","adr":588.47,"rev":2353.87,"src":"Booking.com","los":4,"win":73},{"booked":"2026-05-06","checkin":"2026-05-08","checkout":"2026-05-11","adr":375.0,"rev":1125.0,"src":"Airbnb","los":3,"win":2},{"booked":"2026-04-28","checkin":"2026-10-19","checkout":"2026-10-23","adr":574.88,"rev":2299.5,"src":"Vrbo","los":4,"win":174},{"booked":"2026-04-27","checkin":"2026-12-21","checkout":"2026-12-27","adr":1088.05,"rev":6528.3,"src":"Airbnb","los":6,"win":238},{"booked":"2026-04-24","checkin":"2026-05-14","checkout":"2026-05-19","adr":513.42,"rev":2567.1,"src":"Airbnb","los":5,"win":20},{"booked":"2026-04-15","checkin":"2026-04-18","checkout":"2026-04-21","adr":362.1,"rev":1086.3,"src":"Airbnb","los":3,"win":3},{"booked":"2026-04-12","checkin":"2026-05-01","checkout":"2026-05-08","adr":362.42,"rev":2536.92,"src":"Airbnb","los":7,"win":19},{"booked":"2026-04-11","checkin":"2026-07-25","checkout":"2026-08-22","adr":967.01,"rev":27076.2,"src":"Plum Guide","los":28,"win":105},{"booked":"2026-04-07","checkin":"2026-07-02","checkout":"2026-07-15","adr":632.23,"rev":8218.96,"src":"Booking.com","los":13,"win":86},{"booked":"2026-03-27","checkin":"2026-04-14","checkout":"2026-04-18","adr":363.19,"rev":1452.75,"src":"Booking.com","los":4,"win":18},{"booked":"2026-03-24","checkin":"2026-05-24","checkout":"2026-06-02","adr":424.54,"rev":3820.84,"src":"Booking.com","los":9,"win":61},{"booked":"2026-03-23","checkin":"2026-06-20","checkout":"2026-06-28","adr":821.25,"rev":6570.0,"src":"Airbnb","los":8,"win":89},{"booked":"2026-03-21","checkin":"2026-03-26","checkout":"2026-04-02","adr":292.5,"rev":2047.5,"src":"Airbnb","los":7,"win":5},{"booked":"2026-03-20","checkin":"2026-04-03","checkout":"2026-04-05","adr":323.7,"rev":647.4,"src":"Booking.com","los":2,"win":14},{"booked":"2026-03-08","checkin":"2026-06-03","checkout":"2026-06-07","adr":589.5,"rev":2358.0,"src":"Marriott H&V","los":4,"win":87},{"booked":"2026-03-08","checkin":"2026-06-10","checkout":"2026-06-17","adr":684.57,"rev":4792.0,"src":"Marriott H&V","los":7,"win":94},{"booked":"2026-03-03","checkin":"2026-05-20","checkout":"2026-05-24","adr":550.88,"rev":2203.5,"src":"Booking.com","los":4,"win":78},{"booked":"2026-03-01","checkin":"2026-03-06","checkout":"2026-03-08","adr":351.0,"rev":702.0,"src":"Airbnb","los":2,"win":5},{"booked":"2026-02-21","checkin":"2026-02-26","checkout":"2026-03-02","adr":195.0,"rev":780.0,"src":"Booking.com","los":4,"win":5},{"booked":"2026-02-19","checkin":"2026-04-23","checkout":"2026-04-29","adr":551.83,"rev":3311.0,"src":"Airbnb","los":6,"win":63},{"booked":"2026-02-18","checkin":"2026-04-05","checkout":"2026-04-11","adr":456.15,"rev":2736.9,"src":"Airbnb","los":6,"win":46},{"booked":"2026-02-06","checkin":"2026-02-19","checkout":"2026-02-23","adr":254.72,"rev":1018.87,"src":"Booking.com","los":4,"win":13},{"booked":"2026-02-05","checkin":"2026-02-06","checkout":"2026-02-09","adr":301.67,"rev":905.0,"src":"Airbnb","los":3,"win":1}],"post":[{"booked":"2026-05-23","checkin":"2026-10-12","checkout":"2026-10-18","adr":651.15,"rev":3906.9,"src":"Airbnb","los":6,"win":142}]},{"id":"679b0ee30cd7d20011e1f535","short":"117-1 Harley Street","nick":"Harley Queen","full":"117-1 Harley Street -- Harley Queen","br":2,"minP":250,"baseP":450,"maxP":1000,"res":[{"booked":"2026-05-17","checkin":"2026-05-23","checkout":"2026-05-26","adr":350.1,"rev":1050.3,"src":"Booking.com","los":3,"win":6},{"booked":"2026-05-09","checkin":"2026-07-23","checkout":"2026-07-28","adr":1002.84,"rev":5014.21,"src":"Plum Guide","los":5,"win":75},{"booked":"2026-05-04","checkin":"2026-05-04","checkout":"2026-05-05","adr":369.9,"rev":369.9,"src":"Booking.com","los":1,"win":0},{"booked":"2026-05-03","checkin":"2026-08-01","checkout":"2026-08-09","adr":676.13,"rev":5409.0,"src":"Vrbo","los":8,"win":90},{"booked":"2026-04-27","checkin":"2026-05-05","checkout":"2026-05-07","adr":314.5,"rev":629.0,"src":"Airbnb","los":2,"win":8},{"booked":"2026-04-25","checkin":"2026-08-13","checkout":"2026-08-20","adr":611.23,"rev":4278.6,"src":"Airbnb","los":7,"win":110},{"booked":"2026-04-25","checkin":"2026-06-13","checkout":"2026-06-16","adr":814.0,"rev":2442.0,"src":"Airbnb","los":3,"win":49},{"booked":"2026-04-22","checkin":"2026-05-07","checkout":"2026-05-14","adr":339.29,"rev":2375.0,"src":"Booking.com","los":7,"win":15},{"booked":"2026-04-20","checkin":"2026-04-25","checkout":"2026-04-27","adr":335.7,"rev":671.4,"src":"Airbnb","los":2,"win":5},{"booked":"2026-04-14","checkin":"2026-04-30","checkout":"2026-05-03","adr":368.67,"rev":1106.0,"src":"Marriott H&V","los":3,"win":16},{"booked":"2026-04-04","checkin":"2026-04-27","checkout":"2026-04-30","adr":453.0,"rev":1359.0,"src":"Airbnb","los":3,"win":23},{"booked":"2026-03-29","checkin":"2026-05-19","checkout":"2026-05-23","adr":315.5,"rev":1262.0,"src":"Airbnb","los":4,"win":51},{"booked":"2026-03-29","checkin":"2026-05-14","checkout":"2026-05-19","adr":413.6,"rev":2068.0,"src":"Airbnb","los":5,"win":46},{"booked":"2026-03-25","checkin":"2026-06-05","checkout":"2026-06-08","adr":454.08,"rev":1362.25,"src":"Hotels.com","los":3,"win":72},{"booked":"2026-03-23","checkin":"2026-06-16","checkout":"2026-06-21","adr":743.0,"rev":3715.0,"src":"Airbnb","los":5,"win":85},{"booked":"2026-03-20","checkin":"2026-04-04","checkout":"2026-04-07","adr":334.75,"rev":1004.25,"src":"Booking.com","los":3,"win":15},{"booked":"2026-03-15","checkin":"2026-04-17","checkout":"2026-04-25","adr":391.22,"rev":3129.75,"src":"Booking.com","los":8,"win":33},{"booked":"2026-03-09","checkin":"2026-04-02","checkout":"2026-04-04","adr":561.0,"rev":1122.0,"src":"Airbnb","los":2,"win":24},{"booked":"2026-03-06","checkin":"2026-04-07","checkout":"2026-04-11","adr":458.25,"rev":1833.0,"src":"Airbnb","los":4,"win":32},{"booked":"2026-03-04","checkin":"2026-03-26","checkout":"2026-03-30","adr":447.75,"rev":1791.0,"src":"Direct","los":4,"win":22},{"booked":"2026-03-04","checkin":"2026-03-20","checkout":"2026-03-26","adr":309.83,"rev":1859.0,"src":"Airbnb","los":6,"win":16},{"booked":"2026-03-02","checkin":"2026-03-06","checkout":"2026-03-08","adr":222.3,"rev":444.6,"src":"Booking.com","los":2,"win":4},{"booked":"2026-02-26","checkin":"2026-05-26","checkout":"2026-06-05","adr":565.25,"rev":5652.5,"src":"Airbnb","los":10,"win":89},{"booked":"2026-02-25","checkin":"2026-03-08","checkout":"2026-03-14","adr":266.33,"rev":1598.0,"src":"Airbnb","los":6,"win":11},{"booked":"2026-02-24","checkin":"2026-02-26","checkout":"2026-02-28","adr":247.95,"rev":495.9,"src":"Airbnb","los":2,"win":2},{"booked":"2026-02-18","checkin":"2026-07-12","checkout":"2026-07-19","adr":779.0,"rev":5453.0,"src":"Airbnb","los":7,"win":144},{"booked":"2026-02-16","checkin":"2026-04-11","checkout":"2026-04-16","adr":420.48,"rev":2102.4,"src":"Airbnb","los":5,"win":54},{"booked":"2026-02-14","checkin":"2026-03-14","checkout":"2026-03-20","adr":342.45,"rev":2054.7,"src":"Airbnb","los":6,"win":28},{"booked":"2026-02-07","checkin":"2026-02-09","checkout":"2026-02-11","adr":208.0,"rev":416.0,"src":"Airbnb","los":2,"win":2},{"booked":"2026-02-06","checkin":"2026-02-24","checkout":"2026-02-26","adr":283.0,"rev":566.0,"src":"Airbnb","los":2,"win":18}],"post":[{"booked":"2026-05-23","checkin":"2026-08-23","checkout":"2026-08-28","adr":525.96,"rev":2629.8,"src":"Airbnb","los":5,"win":92}]},{"id":"679b2736d45a8a004403a461","short":"117B Harley Street","nick":"Harley's Secret","full":"117B Harley Street -- Harley's Secret","br":2,"minP":200,"baseP":398,"maxP":800,"res":[{"booked":"2026-05-17","checkin":"2026-05-17","checkout":"2026-05-22","adr":253.6,"rev":1268.0,"src":"Direct","los":5,"win":0},{"booked":"2026-05-08","checkin":"2026-05-22","checkout":"2026-05-24","adr":254.34,"rev":508.68,"src":"Booking.com","los":2,"win":14},{"booked":"2026-04-26","checkin":"2026-05-14","checkout":"2026-05-17","adr":218.97,"rev":656.92,"src":"Booking.com","los":3,"win":18},{"booked":"2026-04-24","checkin":"2026-07-05","checkout":"2026-07-24","adr":528.0,"rev":10031.98,"src":"Booking.com","los":19,"win":72},{"booked":"2026-04-23","checkin":"2026-05-24","checkout":"2026-05-28","adr":367.13,"rev":1468.53,"src":"Booking.com","los":4,"win":31},{"booked":"2026-04-21","checkin":"2026-05-08","checkout":"2026-05-12","adr":175.57,"rev":702.27,"src":"Booking.com","los":4,"win":17},{"booked":"2026-04-21","checkin":"2026-04-21","checkout":"2026-04-23","adr":162.0,"rev":324.0,"src":"Booking.com","los":2,"win":0},{"booked":"2026-04-15","checkin":"2026-04-16","checkout":"2026-04-19","adr":237.6,"rev":712.8,"src":"Airbnb","los":3,"win":1},{"booked":"2026-04-14","checkin":"2026-04-30","checkout":"2026-05-07","adr":272.72,"rev":1909.02,"src":"Booking.com","los":7,"win":16},{"booked":"2026-04-06","checkin":"2026-06-07","checkout":"2026-06-27","adr":479.55,"rev":9591.08,"src":"Booking.com","los":20,"win":62},{"booked":"2026-03-30","checkin":"2026-04-23","checkout":"2026-04-28","adr":406.44,"rev":2032.2,"src":"Airbnb","los":5,"win":24},{"booked":"2026-03-29","checkin":"2026-05-29","checkout":"2026-06-04","adr":397.5,"rev":2385.0,"src":"Marriott H&V","los":6,"win":61},{"booked":"2026-03-22","checkin":"2026-03-23","checkout":"2026-03-24","adr":175.5,"rev":175.5,"src":"Booking.com","los":1,"win":1},{"booked":"2026-03-20","checkin":"2026-04-03","checkout":"2026-04-07","adr":262.76,"rev":1051.05,"src":"Booking.com","los":4,"win":14},{"booked":"2026-03-20","checkin":"2026-03-24","checkout":"2026-03-28","adr":175.5,"rev":702.0,"src":"Booking.com","los":4,"win":4},{"booked":"2026-03-18","checkin":"2026-04-08","checkout":"2026-04-11","adr":363.35,"rev":1090.05,"src":"Booking.com","los":3,"win":21},{"booked":"2026-03-02","checkin":"2026-03-20","checkout":"2026-03-23","adr":241.8,"rev":725.4,"src":"Booking.com","los":3,"win":18},{"booked":"2026-02-26","checkin":"2026-04-11","checkout":"2026-04-16","adr":469.6,"rev":2348.0,"src":"Airbnb","los":5,"win":44},{"booked":"2026-02-25","checkin":"2026-03-04","checkout":"2026-03-06","adr":179.01,"rev":358.02,"src":"Booking.com","los":2,"win":7},{"booked":"2026-02-24","checkin":"2026-02-27","checkout":"2026-03-03","adr":182.08,"rev":728.33,"src":"Booking.com","los":4,"win":3},{"booked":"2026-02-14","checkin":"2026-02-14","checkout":"2026-02-17","adr":184.23,"rev":552.7,"src":"Booking.com","los":3,"win":0},{"booked":"2026-02-07","checkin":"2026-03-06","checkout":"2026-03-14","adr":360.38,"rev":2883.0,"src":"Airbnb","los":8,"win":27}],"post":[{"booked":"2026-05-25","checkin":"2026-07-27","checkout":"2026-08-03","adr":400.36,"rev":2802.52,"src":"Booking.com","los":7,"win":63},{"booked":"2026-05-22","checkin":"2026-07-29","checkout":"2026-08-18","adr":396.1,"rev":7922.03,"src":"Booking.com","los":20,"win":68}]},{"id":"691504542cdfca00132c7723","short":"182-1 Edgware Road","nick":"Red Bus Residence","full":"182-1 Edgware Road -- Red Bus Residence","br":3,"minP":260,"baseP":550,"maxP":1000,"res":[{"booked":"2026-05-14","checkin":"2026-05-21","checkout":"2026-05-24","adr":294.52,"rev":883.55,"src":"Trip.com","los":3,"win":7},{"booked":"2026-05-07","checkin":"2026-06-22","checkout":"2026-06-25","adr":1056.0,"rev":3168.0,"src":"Marriott H&V","los":3,"win":46},{"booked":"2026-05-03","checkin":"2026-05-04","checkout":"2026-05-06","adr":290.25,"rev":580.5,"src":"Airbnb","los":2,"win":1},{"booked":"2026-04-27","checkin":"2026-05-15","checkout":"2026-05-20","adr":313.15,"rev":1565.73,"src":"Booking.com","los":5,"win":18},{"booked":"2026-04-15","checkin":"2026-06-09","checkout":"2026-06-14","adr":775.08,"rev":3875.4,"src":"Vrbo","los":5,"win":55},{"booked":"2026-04-04","checkin":"2026-04-18","checkout":"2026-04-22","adr":375.5,"rev":1502.0,"src":"Airbnb","los":4,"win":14},{"booked":"2026-03-31","checkin":"2026-06-14","checkout":"2026-06-22","adr":844.41,"rev":6755.27,"src":"Plum Guide","los":8,"win":75},{"booked":"2026-03-26","checkin":"2026-03-26","checkout":"2026-03-29","adr":337.0,"rev":1011.0,"src":"Airbnb","los":3,"win":0},{"booked":"2026-03-23","checkin":"2026-04-15","checkout":"2026-04-18","adr":432.9,"rev":1298.7,"src":"Airbnb","los":3,"win":23},{"booked":"2026-03-20","checkin":"2026-04-05","checkout":"2026-04-09","adr":297.68,"rev":1190.7,"src":"Airbnb","los":4,"win":16},{"booked":"2026-03-20","checkin":"2026-03-20","checkout":"2026-03-22","adr":324.0,"rev":648.0,"src":"Airbnb","los":2,"win":0},{"booked":"2026-03-19","checkin":"2026-03-30","checkout":"2026-04-01","adr":364.0,"rev":728.0,"src":"Airbnb","los":2,"win":11},{"booked":"2026-03-07","checkin":"2026-04-30","checkout":"2026-05-04","adr":431.73,"rev":1726.92,"src":"Booking.com","los":4,"win":54},{"booked":"2026-03-06","checkin":"2026-03-07","checkout":"2026-03-08","adr":338.58,"rev":338.58,"src":"Booking.com","los":1,"win":1},{"booked":"2026-02-24","checkin":"2026-05-06","checkout":"2026-05-12","adr":358.43,"rev":2150.56,"src":"Booking.com","los":6,"win":71},{"booked":"2026-02-23","checkin":"2026-04-24","checkout":"2026-04-28","adr":498.0,"rev":1992.0,"src":"Airbnb","los":4,"win":60},{"booked":"2026-02-22","checkin":"2026-03-08","checkout":"2026-03-15","adr":408.64,"rev":2860.45,"src":"Airbnb","los":7,"win":14},{"booked":"2026-02-22","checkin":"2026-02-23","checkout":"2026-02-27","adr":237.6,"rev":950.4,"src":"Airbnb","los":4,"win":1},{"booked":"2026-02-17","checkin":"2026-02-27","checkout":"2026-03-02","adr":201.69,"rev":605.07,"src":"Booking.com","los":3,"win":10},{"booked":"2026-02-16","checkin":"2026-04-09","checkout":"2026-04-13","adr":483.07,"rev":1932.3,"src":"Airbnb","los":4,"win":52},{"booked":"2026-02-04","checkin":"2026-03-15","checkout":"2026-03-19","adr":290.38,"rev":1161.53,"src":"Booking.com","los":4,"win":39},{"booked":"2026-02-02","checkin":"2026-02-13","checkout":"2026-02-17","adr":381.0,"rev":1524.0,"src":"Airbnb","los":4,"win":11}],"post":[{"booked":"2026-05-24","checkin":"2026-06-02","checkout":"2026-06-04","adr":393.75,"rev":787.5,"src":"Airbnb","los":2,"win":9},{"booked":"2026-05-23","checkin":"2026-06-30","checkout":"2026-07-06","adr":972.0,"rev":5832.0,"src":"Airbnb","los":6,"win":38}]},{"id":"69150441fbd8b00011f5ffaf","short":"182-2 Edgware Road","nick":"Quintessentially British","full":"182-2 Edgware Road -- Quintessentially British","br":2,"minP":170,"baseP":400,"maxP":720,"res":[{"booked":"2026-05-18","checkin":"2026-05-25","checkout":"2026-05-30","adr":251.91,"rev":1259.55,"src":"Booking.com","los":5,"win":7},{"booked":"2026-05-15","checkin":"2026-05-30","checkout":"2026-06-02","adr":255.15,"rev":765.45,"src":"Booking.com","los":3,"win":15},{"booked":"2026-05-09","checkin":"2026-07-07","checkout":"2026-07-19","adr":625.08,"rev":7500.96,"src":"Booking.com","los":12,"win":59},{"booked":"2026-05-05","checkin":"2026-08-16","checkout":"2026-08-27","adr":411.96,"rev":4531.58,"src":"Booking.com","los":11,"win":103},{"booked":"2026-04-23","checkin":"2026-04-24","checkout":"2026-04-25","adr":150.0,"rev":150.0,"src":"Direct","los":1,"win":1},{"booked":"2026-04-21","checkin":"2026-04-22","checkout":"2026-04-24","adr":146.27,"rev":292.54,"src":"Trip.com","los":2,"win":1},{"booked":"2026-04-12","checkin":"2026-05-16","checkout":"2026-05-23","adr":319.26,"rev":2234.79,"src":"Booking.com","los":7,"win":34},{"booked":"2026-04-10","checkin":"2026-06-03","checkout":"2026-06-10","adr":369.36,"rev":2585.52,"src":"Airbnb","los":7,"win":54},{"booked":"2026-04-10","checkin":"2026-04-15","checkout":"2026-04-18","adr":234.9,"rev":704.7,"src":"Airbnb","los":3,"win":5},{"booked":"2026-04-05","checkin":"2026-04-25","checkout":"2026-05-03","adr":295.54,"rev":2364.3,"src":"Booking.com","los":8,"win":20},{"booked":"2026-03-20","checkin":"2026-04-06","checkout":"2026-04-09","adr":204.0,"rev":612.0,"src":"Booking.com","los":3,"win":17},{"booked":"2026-03-19","checkin":"2026-03-26","checkout":"2026-03-30","adr":192.6,"rev":770.4,"src":"Booking.com","los":4,"win":7},{"booked":"2026-03-05","checkin":"2026-03-15","checkout":"2026-03-18","adr":242.67,"rev":728.0,"src":"Airbnb","los":3,"win":10},{"booked":"2026-03-03","checkin":"2026-03-07","checkout":"2026-03-13","adr":162.0,"rev":972.0,"src":"Booking.com","los":6,"win":4},{"booked":"2026-03-02","checkin":"2026-03-02","checkout":"2026-03-03","adr":186.0,"rev":186.0,"src":"Airbnb","los":1,"win":0},{"booked":"2026-02-18","checkin":"2026-04-09","checkout":"2026-04-13","adr":283.27,"rev":1133.1,"src":"Booking.com","los":4,"win":50},{"booked":"2026-02-16","checkin":"2026-05-06","checkout":"2026-05-09","adr":301.86,"rev":905.58,"src":"Booking.com","los":3,"win":79},{"booked":"2026-02-08","checkin":"2026-05-09","checkout":"2026-05-16","adr":285.46,"rev":1998.2,"src":"Booking.com","los":7,"win":90},{"booked":"2026-02-06","checkin":"2026-02-07","checkout":"2026-02-11","adr":150.06,"rev":600.22,"src":"Booking.com","los":4,"win":1},{"booked":"2026-02-05","checkin":"2026-11-10","checkout":"2026-11-18","adr":378.07,"rev":3024.54,"src":"Booking.com","los":8,"win":278}],"post":[{"booked":"2026-05-25","checkin":"2026-06-10","checkout":"2026-06-14","adr":278.84,"rev":1115.37,"src":"Airbnb","los":4,"win":16}]},{"id":"691504701bd75000139ee088","short":"182-3 Edgware Road","nick":"Bentley & Co.","full":"182-3 Edgware Road -- Bentley & Co.","br":3,"minP":300,"baseP":538,"maxP":1000,"res":[{"booked":"2026-05-21","checkin":"2026-06-05","checkout":"2026-06-11","adr":487.05,"rev":2922.3,"src":"Airbnb","los":6,"win":15},{"booked":"2026-05-21","checkin":"2026-11-12","checkout":"2026-11-17","adr":566.64,"rev":2833.2,"src":"Muchosol","los":5,"win":175},{"booked":"2026-05-14","checkin":"2026-05-14","checkout":"2026-05-16","adr":456.3,"rev":912.6,"src":"Airbnb","los":2,"win":0},{"booked":"2026-05-09","checkin":"2026-07-07","checkout":"2026-07-19","adr":812.07,"rev":9744.78,"src":"Booking.com","los":12,"win":59},{"booked":"2026-05-08","checkin":"2026-06-13","checkout":"2026-06-22","adr":672.66,"rev":6053.94,"src":"Airbnb","los":9,"win":36},{"booked":"2026-04-26","checkin":"2026-05-01","checkout":"2026-05-04","adr":464.1,"rev":1392.3,"src":"Airbnb","los":3,"win":5},{"booked":"2026-04-24","checkin":"2026-05-16","checkout":"2026-05-26","adr":437.4,"rev":4374.0,"src":"Airbnb","los":10,"win":22},{"booked":"2026-04-23","checkin":"2026-04-25","checkout":"2026-05-01","adr":234.22,"rev":1405.34,"src":"Booking.com","los":6,"win":2},{"booked":"2026-04-19","checkin":"2026-05-07","checkout":"2026-05-10","adr":459.6,"rev":1378.8,"src":"Airbnb","los":3,"win":18},{"booked":"2026-04-06","checkin":"2026-05-27","checkout":"2026-06-03","adr":436.7,"rev":3056.93,"src":"Booking.com","los":7,"win":51},{"booked":"2026-04-02","checkin":"2026-04-17","checkout":"2026-04-19","adr":383.4,"rev":766.8,"src":"Airbnb","los":2,"win":15},{"booked":"2026-03-25","checkin":"2026-04-19","checkout":"2026-04-23","adr":383.85,"rev":1535.4,"src":"Airbnb","los":4,"win":25},{"booked":"2026-03-23","checkin":"2026-03-23","checkout":"2026-03-27","adr":240.0,"rev":960.0,"src":"Airbnb","los":4,"win":0},{"booked":"2026-03-22","checkin":"2026-04-04","checkout":"2026-04-07","adr":351.67,"rev":1055.0,"src":"Airbnb","los":3,"win":13},{"booked":"2026-03-15","checkin":"2026-04-08","checkout":"2026-04-15","adr":372.14,"rev":2604.96,"src":"Airbnb","los":7,"win":24},{"booked":"2026-03-03","checkin":"2026-03-07","checkout":"2026-03-09","adr":233.69,"rev":467.38,"src":"Booking.com","los":2,"win":4},{"booked":"2026-02-26","checkin":"2026-05-04","checkout":"2026-05-07","adr":515.0,"rev":1545.0,"src":"Airbnb","los":3,"win":67},{"booked":"2026-02-08","checkin":"2026-02-28","checkout":"2026-03-07","adr":325.88,"rev":2281.14,"src":"Airbnb","los":7,"win":20},{"booked":"2026-02-06","checkin":"2026-02-12","checkout":"2026-02-15","adr":232.8,"rev":698.4,"src":"Booking.com","los":3,"win":6}],"post":[{"booked":"2026-05-25","checkin":"2026-08-01","checkout":"2026-08-31","adr":518.32,"rev":15549.57,"src":"Booking.com","los":30,"win":68}]},{"id":"6915048437f0ea001300eb8b","short":"182-4 Edgware Road","nick":"Tea & Scones","full":"182-4 Edgware Road -- Tea & Scones","br":3,"minP":300,"baseP":570,"maxP":1000,"res":[{"booked":"2026-05-18","checkin":"2026-06-05","checkout":"2026-06-08","adr":316.44,"rev":949.32,"src":"Booking.com","los":3,"win":18},{"booked":"2026-05-16","checkin":"2026-05-16","checkout":"2026-05-19","adr":324.0,"rev":972.0,"src":"Booking.com","los":3,"win":0},{"booked":"2026-05-14","checkin":"2026-05-31","checkout":"2026-06-04","adr":308.48,"rev":1233.9,"src":"Airbnb","los":4,"win":17},{"booked":"2026-05-04","checkin":"2026-06-29","checkout":"2026-07-08","adr":760.35,"rev":6843.16,"src":"Booking.com","los":9,"win":56},{"booked":"2026-04-24","checkin":"2026-04-27","checkout":"2026-05-01","adr":259.4,"rev":1037.61,"src":"Booking.com","los":4,"win":3},{"booked":"2026-04-02","checkin":"2026-04-20","checkout":"2026-04-26","adr":287.88,"rev":1727.29,"src":"Agoda","los":6,"win":18},{"booked":"2026-03-24","checkin":"2026-05-01","checkout":"2026-05-09","adr":284.49,"rev":2275.95,"src":"Booking.com","los":8,"win":38},{"booked":"2026-03-23","checkin":"2026-05-10","checkout":"2026-05-16","adr":420.75,"rev":2524.5,"src":"Airbnb","los":6,"win":48},{"booked":"2026-03-15","checkin":"2026-03-20","checkout":"2026-03-25","adr":185.58,"rev":927.9,"src":"Booking.com","los":5,"win":5},{"booked":"2026-02-28","checkin":"2026-03-10","checkout":"2026-03-14","adr":220.28,"rev":881.1,"src":"Booking.com","los":4,"win":10},{"booked":"2026-02-28","checkin":"2026-04-09","checkout":"2026-04-19","adr":364.58,"rev":3645.81,"src":"Booking.com","los":10,"win":40},{"booked":"2026-02-24","checkin":"2026-03-31","checkout":"2026-04-06","adr":579.17,"rev":3475.0,"src":"Airbnb","los":6,"win":35},{"booked":"2026-02-16","checkin":"2026-02-16","checkout":"2026-02-19","adr":218.79,"rev":656.38,"src":"Booking.com","los":3,"win":0},{"booked":"2026-02-02","checkin":"2026-03-14","checkout":"2026-03-20","adr":360.4,"rev":2162.4,"src":"Airbnb","los":6,"win":40},{"booked":"2026-02-02","checkin":"2026-02-13","checkout":"2026-02-15","adr":358.5,"rev":717.0,"src":"Airbnb","los":2,"win":11}],"post":[{"booked":"2026-05-24","checkin":"2026-06-08","checkout":"2026-06-13","adr":457.2,"rev":2286.0,"src":"Booking.com","los":5,"win":15},{"booked":"2026-05-23","checkin":"2026-11-03","checkout":"2026-11-13","adr":289.56,"rev":2895.63,"src":"Booking.com","los":10,"win":164},{"booked":"2026-05-23","checkin":"2026-06-16","checkout":"2026-06-26","adr":671.09,"rev":6710.85,"src":"Airbnb","los":10,"win":24},{"booked":"2026-05-22","checkin":"2026-06-26","checkout":"2026-06-29","adr":810.0,"rev":2430.0,"src":"Booking.com","los":3,"win":35}]}]}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('DATA').textContent);
+const CUR = DATA.currency;
+const fmt = n => CUR + Math.round(n).toLocaleString('en-GB');
+const fmt2 = n => CUR + n.toLocaleString('en-GB',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fdate = s => { const d=new Date(s+'T00:00:00'); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}); };
+const fdateShort = s => { const d=new Date(s+'T00:00:00'); return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); };
+
+/* ---- heat colour: p in 0..1 ---- */
+const STOPS=[[181,101,74],[201,148,64],[201,162,39],[123,160,91],[62,142,90]];
+function heat(p){
+  p=Math.max(0,Math.min(1,p)); const x=p*(STOPS.length-1); const i=Math.floor(x); const f=x-i;
+  const a=STOPS[i], b=STOPS[Math.min(i+1,STOPS.length-1)];
+  return `rgb(${Math.round(a[0]+(b[0]-a[0])*f)},${Math.round(a[1]+(b[1]-a[1])*f)},${Math.round(a[2]+(b[2]-a[2])*f)})`;
+}
+function quality(p){
+  if(p>=.85) return {t:'Premium',bg:'rgba(62,142,90,.18)',c:'#7BD49B'};
+  if(p>=.65) return {t:'Strong', bg:'rgba(123,160,91,.16)',c:'#A9CB7E'};
+  if(p>=.40) return {t:'Typical',bg:'rgba(201,162,39,.16)',c:'#E3C765'};
+  if(p>=.20) return {t:'Soft',   bg:'rgba(201,148,64,.15)',c:'#D9A65B'};
+  return            {t:'Low',    bg:'rgba(181,101,74,.18)',c:'#D88B72'};
+}
+const median = a => { if(!a.length)return 0; const s=[...a].sort((x,y)=>x-y); const m=s.length>>1; return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+// percentile rank of v within sorted array arr (fraction of values <= v, midrank)
+function pctRank(arr,v){ let below=0,eq=0; for(const x of arr){ if(x<v)below++; else if(x===v)eq++; } return (below+eq/2)/arr.length; }
+
+/* ---- derive per-listing summary ---- */
+function summarize(l){
+  const r=l.res; const adrs=r.map(x=>x.adr);
+  const sorted=[...adrs].sort((a,b)=>a-b);
+  let hi=r[0], lo=r[0];
+  for(const x of r){ if(x.adr>hi.adr)hi=x; if(x.adr<lo.adr)lo=x; }
+  // longest stay (tie -> higher rev)
+  let lng=r[0]; for(const x of r){ if(x.los>lng.los || (x.los===lng.los && x.rev>lng.rev)) lng=x; }
+  const totRev=r.reduce((s,x)=>s+x.rev,0);
+  const med=median(adrs);
+  return {l, n:r.length, adrs, sorted, hi, lo, lng, med, totRev,
+          minADR:lo.adr, maxADR:hi.adr,
+          avgLos:r.reduce((s,x)=>s+x.los,0)/r.length };
+}
+const SUM = {}; DATA.listings.forEach(l=>SUM[l.id]=summarize(l));
+
+/* ---- header ---- */
+const ALL = DATA.listings.map(l=>SUM[l.id]);
+const totBookings = ALL.reduce((s,x)=>s+x.n,0);
+const totRev = ALL.reduce((s,x)=>s+x.totRev,0);
+const peakADR = Math.max(...ALL.map(x=>x.maxADR));
+const longest = Math.max(...ALL.map(x=>Math.max(...x.l.res.map(r=>r.los))));
+document.getElementById('asof').textContent = fdate(DATA.generatedAt);
+document.getElementById('mstart').textContent = fdate(DATA.baselineStart);
+document.getElementById('mcut').textContent = fdate(DATA.baselineCut);
+document.getElementById('mgolive').textContent = fdate(DATA.goLive);
+const kpis=[
+  ['Properties', DATA.listings.length, 'Greater London'],
+  ['Baseline bookings', totBookings.toLocaleString('en-GB'), 'Pre go-live window'],
+  ['Rental revenue', '<small>£</small>'+Math.round(totRev/1000).toLocaleString('en-GB')+'k', 'Across the portfolio'],
+  ['Highest ADR seen', '<small>£</small>'+Math.round(peakADR).toLocaleString('en-GB'), 'Single reservation'],
+  ['Longest stay', longest+'<small> nts</small>', 'Booked to date'],
+];
+document.getElementById('kpis').innerHTML = kpis.map(k=>
+  `<div class="kpi"><div class="k">${k[0]}</div><div class="v num">${k[1]}</div><div class="s">${k[2]}</div></div>`).join('');
+
+/* ---- card render ---- */
+function rangeBar(s){
+  const lo=s.minADR, hi=s.maxADR; const span=Math.max(hi-lo,1);
+  const pos=v=>((v-lo)/span)*100;
+  const medP=pos(s.med);
+  // floor & base ticks if within a sensible view
+  const floor=s.l.minP, base=s.l.baseP;
+  const ticks=[];
+  if(floor>=lo*0.5 && floor<=hi*1.02) ticks.push({p:Math.max(0,Math.min(100,pos(floor))),lab:'Floor '+fmt(floor),cls:''});
+  if(base>=lo*0.5 && base<=hi*1.02 && Math.abs(base-floor)>span*0.04) ticks.push({p:Math.max(0,Math.min(100,pos(base))),lab:'Base '+fmt(base),cls:'base'});
+  return `<div class="rangewrap">
+    <div class="rb-vals">
+      <div class="rb-end"><div class="lab">Lowest ADR</div><div class="val num">${fmt(lo)}</div></div>
+      <div class="rb-end hi"><div class="lab">Highest ADR</div><div class="val num">${fmt(hi)}</div></div>
+    </div>
+    <div class="track">
+      <div class="fill" style="left:0;right:0"></div>
+      ${ticks.map(t=>`<div class="tick ${t.cls}" style="left:${t.p}%"></div>`).join('')}
+      <div class="med" style="left:${medP}%" title="Median ${fmt(s.med)}"></div>
+    </div>
+    <div class="rb-caption">
+      <span class="floor">Floor<b class="num">${fmt(s.l.minP)}</b></span>
+      <span class="med">Median<b class="num">${fmt(s.med)}</b></span>
+      <span class="base">Base<b class="num">${fmt(s.l.baseP)}</b></span>
+    </div>
+  </div>`;
+}
+function card(s,i){
+  const l=s.l;
+  return `<div class="card" style="animation-delay:${Math.min(i*28,360)}ms" data-id="${l.id}" data-name="${(l.short+' '+l.nick).toLowerCase()}">
+    <div class="c-top">
+      <div><div class="c-name">${l.short}</div><div class="c-nick">${l.nick}</div></div>
+      <div class="brbadge">${l.br===0?'Studio':l.br+' BR'}</div>
+    </div>
+    ${rangeBar(s)}
+    <div class="trio">
+      <div class="st peak"><div class="lab">Highest ADR</div><div class="big num">${fmt(s.hi.adr)}</div><div class="sub num">${s.hi.win}d window</div></div>
+      <div class="st trough"><div class="lab">Lowest ADR</div><div class="big num">${fmt(s.lo.adr)}</div><div class="sub num">${s.lo.win}d window</div></div>
+      <div class="st long"><div class="lab">Longest stay</div><div class="big num">${s.lng.los}<span style="font-size:12px"> nts</span></div><div class="sub num">@ ${fmt(s.lng.adr)} ADR</div></div>
+    </div>
+    <div class="c-foot">
+      <div class="meta num"><b>${s.n}</b> bookings · <b>${fmt(s.totRev)}</b></div>
+      <div class="open">Open ledger <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></div>
+    </div>
+  </div>`;
+}
+
+let sortKey='name';
+function sortList(arr){
+  const a=[...arr];
+  if(sortKey==='name') a.sort((x,y)=>x.l.short.localeCompare(y.l.short,undefined,{numeric:true}));
+  if(sortKey==='peak') a.sort((x,y)=>y.maxADR-x.maxADR);
+  if(sortKey==='range') a.sort((x,y)=>(y.maxADR-y.minADR)-(x.maxADR-x.minADR));
+  if(sortKey==='vol') a.sort((x,y)=>y.n-x.n);
+  if(sortKey==='rev') a.sort((x,y)=>y.totRev-x.totRev);
+  return a;
+}
+function renderGrid(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  let list=sortList(ALL);
+  if(q) list=list.filter(s=>(s.l.short+' '+s.l.nick).toLowerCase().includes(q));
+  const g=document.getElementById('grid');
+  g.innerHTML = list.length ? list.map((s,i)=>card(s,i)).join('')
+    : `<div class="empty">No property matches “${q}”.</div>`;
+  g.querySelectorAll('.card').forEach(c=>c.addEventListener('click',()=>openDrawer(c.dataset.id)));
+}
+document.getElementById('search').addEventListener('input',renderGrid);
+document.querySelectorAll('#sortseg button').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('#sortseg button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); sortKey=b.dataset.sort; renderGrid();
+}));
+
+/* ---------- DRAWER ---------- */
+const scrim=document.getElementById('scrim'), drawer=document.getElementById('drawer');
+let tblSort={key:'booked',dir:-1};
+
+function drawerHTML(s){
+  const l=s.l;
+  const distR=()=>{
+    const lo=s.minADR, hi=s.maxADR, span=Math.max(hi-lo,1);
+    const pts=s.l.res.map(r=>{const p=(r.adr-lo)/span; return `<div class="pt" style="left:${p*100}%;background:${heat(p)};bottom:${8+(Math.random()*22)|0}px" title="${fmt(r.adr)} · ${r.los}n"></div>`;}).join('');
+    const medP=((s.med-lo)/span)*100;
+    const q=[25,50,75].map(qq=>`<div class="grid-q" style="left:${qq}%"></div>`).join('');
+    return `<div class="dist"><div class="dh"><div class="t">Realised ADR spread</div><div class="r num">${fmt(lo)} — ${fmt(hi)} · ${s.n} stays</div></div>
+      <div class="strip">${q}${pts}<div class="med-line" style="left:${medP}%"></div><div class="ev-line" id="evline"></div></div></div>`;
+  };
+  return `
+  <div class="d-head">
+    <button class="d-close" id="dclose"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="d-eyebrow">${l.br===0?'Studio':l.br+'-Bedroom'} · Greater London</div>
+    <div class="d-title">${l.short}</div>
+    <div class="d-sub">${l.nick}</div>
+    <div class="d-floors">
+      <div class="f">Floor<b class="num">${fmt(l.minP)}</b></div>
+      <div class="f">Base<b class="num">${fmt(l.baseP)}</b></div>
+      <div class="f">Max<b class="num">${fmt(l.maxP)}</b></div>
+      <div class="f">Median ADR<b class="num">${fmt(s.med)}</b></div>
+      <div class="f">Avg stay<b class="num">${s.avgLos.toFixed(1)}n</b></div>
+      <div class="f">Rental rev<b class="num">${fmt(s.totRev)}</b></div>
+    </div>
+  </div>
+  <div class="d-body">
+    <div class="evalbox">
+      <div class="eh"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>Stress-test an incoming booking</div>
+      <div class="evalrow">
+        <div class="inp"><span class="cur">£</span><input id="evadr" type="number" inputmode="decimal" placeholder="ADR of new booking"></div>
+        <div class="verdict idle" id="verdict">Type an ADR to see where it ranks against this property's ${s.n} past bookings.</div>
+      </div>
+    </div>
+    ${distR()}
+    <div class="tabhead"><div class="tt">Reservation ledger · baseline</div><div class="tc num">Booked ${fdateShort(DATA.baselineStart)} – ${fdateShort(DATA.baselineCut)}</div></div>
+    <table id="ledger"><thead><tr>
+      <th data-k="booked">Booked <span class="ar"></span></th>
+      <th data-k="checkin">Check-in <span class="ar"></span></th>
+      <th data-k="los">Nights <span class="ar"></span></th>
+      <th data-k="adr">ADR <span class="ar"></span></th>
+      <th data-k="rev">Rental rev <span class="ar"></span></th>
+      <th data-k="src">Source <span class="ar"></span></th>
+      <th data-k="win">Window <span class="ar"></span></th>
+    </tr></thead><tbody id="ledgerbody"></tbody></table>
+    ${l.post.length?postSection(s):''}
+  </div>`;
+}
+function postSection(s){
+  return `<div class="postwrap">
+    <div class="posthd" id="posthd"><div class="pt">Booked after go-live (${fdate(DATA.goLive)})</div><div class="cnt num">${s.l.post.length} excluded from envelope</div>
+      <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></div>
+    <div class="postbody" id="postbody">
+      <div class="postnote">These reservations landed under the new dynamic pricing. Shown for reference — compare their ADR against the baseline range above, but they don't move the benchmarks.</div>
+      <table><thead><tr><th>Booked</th><th>Check-in</th><th>Nights</th><th>ADR</th><th>Rental rev</th><th>Source</th><th>Window</th></tr></thead>
+      <tbody>${s.l.post.map(r=>postRow(s,r)).join('')}</tbody></table>
+    </div></div>`;
+}
+function rowHTML(s,r){
+  const p=pctRank(s.adrs,r.adr); const c=heat(p);
+  const lo=s.minADR,hi=s.maxADR,span=Math.max(hi-lo,1); const w=((r.adr-lo)/span)*100;
+  return `<tr>
+    <td class="dt num">${fdate(r.booked)}</td>
+    <td class="dt num">${fdate(r.checkin)}<small>${r.los} nts</small></td>
+    <td class="num" style="color:var(--ink2)">${r.los}</td>
+    <td><span class="adrcell"><span class="adrbar"><i style="width:${Math.max(6,Math.min(100,w))}%;background:${c}"></i></span><span class="adrnum num">${fmt(r.adr)}</span></span></td>
+    <td class="revnum num">${fmt(r.rev)}</td>
+    <td class="src">${r.src}</td>
+    <td class="num muted">${r.win}d</td>
+  </tr>`;
+}
+function postRow(s,r){
+  const p=pctRank(s.adrs,r.adr); const c=heat(p); const q=quality(p);
+  const lo=s.minADR,hi=s.maxADR,span=Math.max(hi-lo,1); const w=((r.adr-lo)/span)*100;
+  return `<tr>
+    <td class="dt num">${fdate(r.booked)}</td>
+    <td class="dt num">${fdate(r.checkin)}<small>${r.los} nts</small></td>
+    <td class="num" style="color:var(--ink2)">${r.los}</td>
+    <td><span class="adrcell"><span class="adrbar"><i style="width:${Math.max(6,Math.min(100,w))}%;background:${c}"></i></span><span class="adrnum num">${fmt(r.adr)}</span></span></td>
+    <td class="revnum num">${fmt(r.rev)}</td>
+    <td class="src">${r.src}</td>
+    <td class="num muted">${r.win}d</td>
+  </tr>`;
+}
+function renderLedger(s){
+  const body=document.getElementById('ledgerbody');
+  const rows=[...s.l.res].sort((a,b)=>{
+    const k=tblSort.key; let av=a[k],bv=b[k];
+    if(k==='booked'||k==='checkin'){av=new Date(av);bv=new Date(bv);}
+    if(k==='src'){return tblSort.dir*String(av).localeCompare(String(bv));}
+    return tblSort.dir*(av-bv);
+  });
+  body.innerHTML=rows.map(r=>rowHTML(s,r)).join('');
+  document.querySelectorAll('#ledger thead th').forEach(th=>{
+    const ar=th.querySelector('.ar');
+    ar.textContent = th.dataset.k===tblSort.key ? (tblSort.dir<0?'↓':'↑') : '';
+  });
+}
+function openDrawer(id){
+  const s=SUM[id];
+  drawer.innerHTML=drawerHTML(s);
+  tblSort={key:'booked',dir:-1};
+  renderLedger(s);
+  // events
+  document.getElementById('dclose').addEventListener('click',closeDrawer);
+  document.querySelectorAll('#ledger thead th').forEach(th=>th.addEventListener('click',()=>{
+    const k=th.dataset.k;
+    if(tblSort.key===k)tblSort.dir*=-1; else {tblSort.key=k; tblSort.dir=(k==='src')?1:-1;}
+    renderLedger(s);
+  }));
+  const ph=document.getElementById('posthd');
+  if(ph)ph.addEventListener('click',()=>{ph.classList.toggle('open');document.getElementById('postbody').classList.toggle('open');});
+  const ev=document.getElementById('evadr');
+  ev.addEventListener('input',()=>evaluate(s,ev.value));
+  setTimeout(()=>ev.focus(),420);
+  scrim.classList.add('show'); drawer.classList.add('show'); drawer.setAttribute('aria-hidden','false');
+  document.body.style.overflow='hidden';
+}
+function evaluate(s,val){
+  const v=parseFloat(val); const vb=document.getElementById('verdict'); const line=document.getElementById('evline');
+  if(!v||v<=0){ vb.className='verdict idle'; vb.innerHTML=`Type an ADR to see where it ranks against this property's ${s.n} past bookings.`; if(line)line.classList.remove('show'); return; }
+  const p=pctRank(s.adrs,v); const q=quality(p);
+  const lo=s.minADR,hi=s.maxADR,span=Math.max(hi-lo,1);
+  if(line){ line.style.left=Math.max(0,Math.min(100,((v-lo)/span)*100))+'%'; line.classList.add('show'); }
+  const beaten=Math.round(p*100);
+  let rel;
+  if(v>hi) rel=`a new high — beats the previous best of <b>${fmt(hi)}</b>`;
+  else if(v<lo) rel=`below the weakest booking on record (<b>${fmt(lo)}</b>)`;
+  else rel=`stronger than <b>${beaten}%</b> of past bookings`;
+  const vsMed = v>=s.med ? `${fmt(v-s.med)} above median` : `${fmt(s.med-v)} below median`;
+  vb.className='verdict'; vb.style.borderColor=q.c+'55'; vb.style.background='linear-gradient(90deg,'+q.bg+',var(--bg))';
+  vb.innerHTML=`<span class="pill" style="background:${q.bg};color:${q.c}">${q.t}</span><span class="vtxt">${fmt(v)} ADR is ${rel} · <b>${vsMed}</b>.</span>`;
+}
+function closeDrawer(){ scrim.classList.remove('show'); drawer.classList.remove('show'); drawer.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+scrim.addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+
+renderGrid();
+</script>
+</body>
+</html>
